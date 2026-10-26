@@ -54,8 +54,9 @@ fetch() {
 [ -x /usr/local/bin/docker ] && PATH=$PATH:/usr/local/bin
 
 if ! command -v docker >/dev/null; then
-	[ "$(uname -s)" = Linux ] && [ ! -d /volume1 ] ||
+	if [ "$(uname -s)" != Linux ] || [ -d /volume1 ]; then
 		die "Docker is not installed. Install it first (on a NAS, from its app store), then run this again."
+	fi
 	say "Docker is not installed yet."
 	case $(ask "Install it now with the official script from get.docker.com? (y/n)" y) in
 	y* | Y*) fetch https://get.docker.com | sudo sh ;;
