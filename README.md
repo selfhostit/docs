@@ -47,3 +47,4 @@ Docker support (many budget and older ones) won't work.
 
 We can install and set up the apps on your hardware, or build an app you need:
 [tell us what you need](https://github.com/selfhostit/website/issues/new?template=request.yml).
+More about the apps at [selfhostit.org](https://selfhostit.org).
