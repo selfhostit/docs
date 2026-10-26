@@ -44,8 +44,7 @@ x86 and ARM servers, a Raspberry Pi 3 or newer (64-bit Raspberry Pi OS is best),
 models with a Docker app. Each app needs about 128 to 512 MB of memory. NAS models without
 Docker support (many budget and older ones) won't work.
 
-## Want it set up for you?
+## Questions or ideas?
 
-We can install and set up the apps on your hardware, or build an app you need:
-[tell us what you need](https://github.com/selfhostit/website/issues/new?template=request.yml).
-More about the apps at [selfhostit.org](https://selfhostit.org).
+Need a hand with setup, or have an idea for an app? Write to kalfasyan@pm.me, or see [selfhostit.org/contact](https://selfhostit.org/contact.html).
+Found a bug in an app? Open an issue in that app's repository.
