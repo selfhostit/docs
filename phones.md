@@ -12,27 +12,42 @@ Pick one of these.
 apps get an `https://` address with a real certificate that only your devices can reach, at
 home and away, and you don't open anything in your router.
 
-1. Make a free Tailscale account, and install Tailscale on your phones.
-2. Install it on the machine running the apps: `curl -fsSL https://tailscale.com/install.sh | sh`
-   and then `sudo tailscale up` (on a NAS, install the Tailscale package from its app store).
-3. In the [admin console](https://login.tailscale.com/admin/dns), turn on **MagicDNS** and
+**With the installer.** Say yes when [the installer](README.md#quick-start) asks to set up
+Tailscale (run it again if you skipped it). It then:
+
+1. Shows a link: open it, and sign in to Tailscale or make a free account. The machine
+   joins your Tailscale network as `selfhostit`.
+2. The first time, shows a second link that turns on HTTPS for your Tailscale network: open
+   it and allow it.
+3. Lists every app's address, such as `https://selfhostit.your-tailnet.ts.net:8090` for
+   Splitwiz. The port is the same as the app's port on the machine.
+
+Then, on each phone, install the Tailscale app, sign in with the same account, and
+[install the apps](#install-the-app-on-the-phone). The sign-in and the addresses stay after a
+restart, and apps you add later get an address when you run the installer for them.
+
+To sign in without the link, for example on a machine without a browser nearby, set an
+[auth key](https://login.tailscale.com/admin/settings/keys):
+`curl -fsSL .../install.sh | TS_AUTHKEY=tskey-... sh`.
+
+**By hand**, if Tailscale already runs on the machine:
+
+1. In the [admin console](https://login.tailscale.com/admin/dns), turn on **MagicDNS** and
    **HTTPS Certificates**.
-4. Give each app an HTTPS port on the machine's Tailscale address:
+2. Give each app an HTTPS port on the machine's Tailscale address:
 
    ```sh
-   sudo tailscale serve --bg --https=443 http://127.0.0.1:8090    # Splitwiz
-   sudo tailscale serve --bg --https=8443 http://127.0.0.1:8091   # should-we
-   sudo tailscale serve --bg --https=10000 http://127.0.0.1:8092  # Flowy
+   sudo tailscale serve --bg --https=8090 http://127.0.0.1:8090   # Splitwiz
+   sudo tailscale serve --bg --https=8091 http://127.0.0.1:8091   # should-we
+   sudo tailscale serve --bg --https=8092 http://127.0.0.1:8092   # Flowy
+   sudo tailscale serve --bg --https=8093 http://127.0.0.1:8093   # Troye
    ```
 
-   `tailscale serve status` shows the addresses, such as
-   `https://homeserver.your-tailnet.ts.net:8443`. They stay after a restart.
+   `tailscale serve status` shows the addresses. They stay after a restart.
 
 Flowy and Troye can also join Tailscale on their own, each with its own name such as
-`https://flowy.your-tailnet.ts.net`: paste an
-[auth key](https://login.tailscale.com/admin/settings/keys) when their installer asks for
-one, or later set `TS_AUTHKEY` and `COMPOSE_FILE` in their `.env` as described there and run
-the installer again.
+`https://flowy.your-tailnet.ts.net`, when you install them with their own installer: see
+their `docs/deploy.md`.
 
 Everyone who uses the apps needs to be on your tailnet. That suits a household; to share a
 should-we decision with friends, use a public address instead.

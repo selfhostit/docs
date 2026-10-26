@@ -24,8 +24,9 @@ curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | s
 It installs Docker if it is missing (on Linux), asks which apps you want and where to keep
 them, and starts them. Run it again to update; your settings and data are kept.
 
-Then make them reachable from your phones over HTTPS, which phones need to install an app
-and get notifications: see [Use them on your phones](phones.md).
+It can also set up [Tailscale](phones.md#tailscale-recommended), so your phones reach the apps
+over HTTPS, which they need to install an app and get notifications. You only open a link to
+sign in; there are no keys or settings to copy. Then [put the apps on your phones](phones.md).
 
 ## Guides
 

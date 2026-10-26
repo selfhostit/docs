@@ -5,13 +5,15 @@
 #   curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | sh
 #
 # It asks which apps you want, gives each one its own folder and port, and runs
-# that app's own installer (or its compose file). Run it again to update: every
-# app keeps its settings and data.
+# that app's own installer (or its compose file). Then it can put them all on
+# your Tailscale network with https:// addresses, which phones need: you sign in
+# with a link, no keys or settings. Run it again to update: every app keeps its
+# settings and data.
 #
 # Pick the apps without the menu:
 #   curl -fsSL .../install.sh | sh -s -- splitwiz flowy
 # Other settings, all optional: SELFHOSTIT_DIR (the folder that holds one folder
-# per app), TZ, and TS_AUTHKEY (Tailscale, for the apps that support it).
+# per app), TZ, and TS_AUTHKEY (a Tailscale auth key, to sign in without the link).
 set -eu
 
 apps="splitwiz should-we flowy troye"
@@ -117,13 +119,26 @@ fi
 base=$(ask "Folder for the apps (one folder each, with its data)" "$base")
 mkdir -p "$base" 2>/dev/null || $sudo mkdir -p "$base" || die "could not create $base"
 
+# Tailscale: once set up, keep it; with an auth key, set it up; otherwise ask.
+if [ -d "$base/tailscale" ] || [ -n "${TS_AUTHKEY:-}" ]; then
+	tailscale=y
+elif interactive; then
+	echo
+	echo "Phones only install the apps and show notifications over https://. Tailscale"
+	echo "(free) gives each app an https:// address that only your own devices can reach."
+	tailscale=$(ask "Set up Tailscale for the apps? (y/n)" y)
+else
+	tailscale=n
+fi
+
 # --- Install ------------------------------------------------------------------
 
 # The plasto-based apps (Flowy, Troye) come with deploy/install.sh, which takes
-# the folder as its argument and PORT for a new install.
+# the folder as its argument and PORT for a new install. An empty TS_AUTHKEY
+# skips their own Tailscale question: the shared node below covers them.
 install_plasto() { # app port dir
 	fetch "https://raw.githubusercontent.com/selfhostit/$1/main/deploy/install.sh" |
-		$sudo env PORT="$2" TS_AUTHKEY="${TS_AUTHKEY:-}" sh -s -- "$3"
+		$sudo env PORT="$2" TS_AUTHKEY= sh -s -- "$3"
 }
 
 install_splitwiz() { # port dir
@@ -160,16 +175,130 @@ for app in $chosen; do
 	) || die "$app did not install; see the messages above"
 done
 
+# app_port app: the port the app listens on, from its .env if it was changed
+app_port() {
+	port=$(sed -n 's/^\(PORT\|SPLITWIZ_PORT\|SHOULD_WE_PORT\)=//p' "$base/$1/.env" 2>/dev/null | head -n 1)
+	echo "${port:-$(info "$1" | cut -d'|' -f1)}"
+}
+
+# --- Tailscale ----------------------------------------------------------------
+
+# One Tailscale node, "selfhostit", for all the apps: one sign-in, and each app
+# at https://selfhostit.<your-tailnet>.ts.net:<its port>. It uses the host's
+# network to reach the apps on 127.0.0.1, where they listen.
+ts() { $sudo docker exec selfhostit-tailscale tailscale --socket=/tmp/tailscaled.sock "$@"; }
+
+# ts_status KEY: a string field of `tailscale status --json`
+ts_status() {
+	ts status --json --peers=false 2>/dev/null |
+		sed -n "s/^ *\"$1\": *\"\([^\"]*\)\".*/\1/p" | head -n 1
+}
+
+setup_tailscale() {
+	dir=$base/tailscale
+	$sudo mkdir -p "$dir/state"
+	$sudo tee "$dir/docker-compose.yml" >/dev/null <<-'EOF'
+		# The shared Tailscale node of the selfhostit apps, written by install.sh.
+		# It signs in once; the login and the https:// addresses are kept in ./state.
+		name: selfhostit-tailscale
+		services:
+		  tailscale:
+		    image: tailscale/tailscale:stable
+		    container_name: selfhostit-tailscale
+		    restart: unless-stopped
+		    network_mode: host
+		    environment:
+		      TS_HOSTNAME: selfhostit
+		      TS_AUTHKEY: ${TS_AUTHKEY:-}
+		      TS_AUTH_ONCE: "true"
+		      TS_STATE_DIR: /var/lib/tailscale
+		    volumes:
+		      - ./state:/var/lib/tailscale
+		    mem_limit: 256m
+	EOF
+	(cd "$dir" && $sudo docker compose pull --quiet &&
+		$sudo env TS_AUTHKEY="${TS_AUTHKEY:-}" docker compose up -d --remove-orphans) ||
+		return 1
+
+	shown=
+	i=0
+	while :; do
+		state=$(ts_status BackendState)
+		case $state in
+		Running) break ;;
+		NeedsLogin)
+			url=$(ts_status AuthURL)
+			if [ -n "$url" ] && [ "$url" != "$shown" ]; then
+				echo
+				say "Sign in to Tailscale (or make a free account) by opening this link:"
+				echo
+				echo "    $url"
+				echo
+				echo "Waiting for you to sign in..."
+				shown=$url
+			fi
+			;;
+		NeedsMachineAuth)
+			[ "$shown" = approve ] || echo "Approve the device 'selfhostit' in https://login.tailscale.com/admin/machines"
+			shown=approve
+			;;
+		esac
+		i=$((i + 1))
+		if [ "$i" -gt 900 ]; then
+			echo "Tailscale is not signed in yet. Run this installer again when you are ready."
+			return 1
+		fi
+		sleep 1
+	done
+
+	# The first `tailscale serve` turns on HTTPS for the tailnet if needed: it
+	# shows a link to allow that and waits.
+	say "Giving each app an https:// address"
+	first=y
+	for app in $chosen; do
+		port=$(app_port "$app")
+		if [ $first = y ]; then
+			ts serve --bg --https="$port" "http://127.0.0.1:$port" || return 1
+			first=n
+		else
+			ts serve --bg --https="$port" "http://127.0.0.1:$port" >/dev/null || return 1
+		fi
+	done
+	ts serve status --json 2>/dev/null | grep -q "\"$port\"" || {
+		echo "HTTPS is not on for your tailnet yet. Allow it with the link above, then run this installer again."
+		return 1
+	}
+	ts_name=$(ts_status DNSName)
+	ts_name=${ts_name%.}
+}
+
+ts_name=
+if [ "$tailscale" = y ] || [ "$tailscale" = Y ] || [ "$tailscale" = yes ]; then
+	echo
+	say "== Tailscale"
+	setup_tailscale || echo "Tailscale is not set up; the apps work on this machine meanwhile."
+fi
+
 # --- Done ---------------------------------------------------------------------
 
 echo
-say "Done. On this machine:"
+say "Done."
 for app in $chosen; do
-	dir=$base/$app
-	port=$(sed -n 's/^\(PORT\|SPLITWIZ_PORT\|SHOULD_WE_PORT\)=//p' "$dir/.env" 2>/dev/null | head -n 1)
-	printf '  %-10s http://localhost:%s   (%s)\n' "$app" "${port:-$(info "$app" | cut -d'|' -f1)}" "$dir"
+	port=$(app_port "$app")
+	if [ -n "$ts_name" ]; then
+		printf '  %-10s https://%s:%s\n' "$app" "$ts_name" "$port"
+	else
+		printf '  %-10s http://localhost:%s   (%s)\n' "$app" "$port" "$base/$app"
+	fi
 done
 echo
-echo "Next, reach them from your phones over HTTPS:"
-echo "  https://github.com/selfhostit/docs/blob/main/phones.md"
+if [ -n "$ts_name" ]; then
+	echo "On each phone, install the Tailscale app and sign in with the same account,"
+	echo "then open these addresses and add each app to the home screen:"
+	echo "  https://github.com/selfhostit/docs/blob/main/phones.md#install-the-app-on-the-phone"
+	echo "The apps and their data are in $base."
+else
+	echo "Next, reach them from your phones over HTTPS:"
+	echo "  https://github.com/selfhostit/docs/blob/main/phones.md"
+fi
 echo "To update, run this installer again with the same apps."
