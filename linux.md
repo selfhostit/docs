@@ -30,16 +30,17 @@ The installer:
 2. Shows the apps and asks which ones you want. Type numbers or names, such as `1 3`.
 3. Asks for a folder, `~/selfhostit` by default, and puts each app in its own folder there
    with its database.
-4. Runs each app's own installer, which may ask a few questions of its own. Pressing Enter
+4. Asks whether to set up Tailscale, which gives every app an `https://` address that only
+   your own devices can reach. Phones need that to install the apps and get notifications.
+5. Runs each app's own installer, which may ask a few questions of its own. Pressing Enter
    keeps the suggested answer.
+6. With Tailscale, shows a link to sign in (or make a free account), and the first time a
+   second link to allow HTTPS. Open them on your computer or phone.
 
-When it is done it lists every app with its address on this machine, such as
-`http://localhost:8090`. Each app only listens on the machine itself, so nothing is open to
-your network or the internet yet. The next step is [using them on your phones](phones.md).
-
-Flowy and Troye can join your Tailscale network by themselves: paste a Tailscale auth key
-when their installer asks, and they get an `https://` address right away (see
-[phones](phones.md)).
+When it is done it lists every app with its address: `https://selfhostit.<your-tailnet>.ts.net:8090`
+with Tailscale, or `http://localhost:8090` on the machine itself without it. Each app only
+listens on the machine and on your Tailscale network, so nothing is open to the rest of your
+network or the internet. Then [install the apps on your phones](phones.md).
 
 ## Without the menu
 
