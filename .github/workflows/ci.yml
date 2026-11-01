@@ -11,3 +11,5 @@ jobs:
       - uses: actions/checkout@v4
       - run: shellcheck -s sh install.sh
       - run: sh -n install.sh
+      - run: shellcheck -s sh selfhostit
+      - run: sh -n selfhostit
