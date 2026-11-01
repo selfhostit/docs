@@ -53,5 +53,7 @@ Two ways, both described in [phones](phones.md):
 
 ## Updating and backups
 
-See [updates and backups](updates-and-backups.md). On a Synology, add `/volume1/docker` to
+With SSH on, `selfhostit update splitwiz` (or `flowy`, or `all`) pulls and restarts an app in
+one step; see [updates and backups](updates-and-backups.md#one-command-selfhostit-update) to
+install it. On a Synology, add `/volume1/docker` to
 a **Hyper Backup** task to keep a copy of every app's data off the NAS.

@@ -16,6 +16,38 @@ its folder:
 docker compose pull && docker compose up -d
 ```
 
+### One command: `selfhostit update`
+
+To update apps over SSH without the installer, install the `selfhostit` command once:
+
+```sh
+mkdir -p ~/bin
+curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/selfhostit -o ~/bin/selfhostit
+chmod +x ~/bin/selfhostit
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.profile
+. ~/.profile
+```
+
+On a Synology, first turn on Control Panel > User & Group > Advanced > **Enable user home
+service**, so your home folder is on the volume and the command survives DSM updates.
+
+Then:
+
+```sh
+selfhostit update splitwiz        # one app
+selfhostit update splitwiz flowy  # several
+selfhostit update all             # every app
+selfhostit list                   # the apps it finds and the image each one runs
+```
+
+For each app it shows the image its compose file points at, pulls it, and says whether the
+container was already up to date, recreated with a new image, or recreated because its
+settings changed. It finds apps in the folder the installer uses (`/volume1/docker` on a
+Synology, `~/selfhostit` elsewhere), and works for any folder there with a
+`docker-compose.yml`. Keep them somewhere else? Add `export SELFHOSTIT_DIR=/path/to/apps` to
+`~/.profile`. It uses `sudo` when your user can't reach Docker directly, and asks for the
+password once. Run the `curl` line again to get a newer version of the command.
+
 On a Synology without SSH: Container Manager > Image, select the app's image and choose
 **Update**, then Project > the app > Action > **Build**.
 
