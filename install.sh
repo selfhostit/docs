@@ -290,6 +290,9 @@ for app in $chosen; do
 	else
 		printf '  %-10s http://localhost:%s   (%s)\n' "$app" "$port" "$base/$app"
 	fi
+	# a new install asks for this one-time code on its setup screen
+	code=$($sudo cat "$base/$app/pb_data/setup_code" 2>/dev/null || true)
+	[ -z "$code" ] || printf '  %-10s setup code: %s\n' "" "$code"
 done
 echo
 if [ -n "$ts_name" ]; then
