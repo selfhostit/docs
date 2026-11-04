@@ -46,7 +46,8 @@ analytics. They listen on `127.0.0.1` only and are reached through Tailscale or 
 reverse proxy, never a forwarded port. Containers drop every Linux capability, a new install
 asks for a one-time setup code, sign-ins are rate limited and the web apps send a Content
 Security Policy. CI runs the tests on every change, with Actions pinned to commit hashes.
-Not done yet: signed, versioned releases (updates follow `main`) and an independent audit.
+Updates follow versioned releases, and each image has a signed attestation of the commit that
+built it. Not done yet: an independent audit.
 Details, with links to the code: [Security and privacy](security.md). Report a problem to
 kalfasyan@pm.me ([policy](https://github.com/selfhostit/.github/blob/main/SECURITY.md)).
 

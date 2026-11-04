@@ -46,7 +46,12 @@ with what you found and how to reproduce it; see [SECURITY.md](https://github.co
   dependencies.
 - should-we also scans every push for committed secrets with gitleaks.
 - Images are published to [ghcr.io/selfhostit](https://github.com/orgs/selfhostit/packages)
-  for amd64, arm64 and armv7, tagged `latest` and with the commit they were built from.
+  for amd64, arm64 and armv7. A release (`v1.2.3`, with notes in each app's `CHANGELOG.md`)
+  moves `latest`, which installs follow; changes on `main` only go to `edge`.
+- Every published image has a signed build provenance attestation, which says which
+  workflow run, repository and commit built it. Check one with the
+  [GitHub CLI](https://cli.github.com):
+  `gh attestation verify oci://ghcr.io/selfhostit/flowy:latest --repo selfhostit/flowy`.
 
 ## What you are trusting
 
@@ -54,9 +59,9 @@ Being honest about this matters more than sounding safe.
 
 - **The installer and the images come from this GitHub organization.** The installer
   downloads each app's installer or compose file from that app's `main` branch, and the apps
-  run the `latest` image. Someone who took over the maintainer's GitHub account could ship
-  a bad update to every install that updates. Releases are not signed yet; see
-  [Not done yet](#not-done-yet).
+  run the newest release. An attestation proves an image was built by the app's own CI from
+  a commit in its repository, not that the commit is harmless: someone who took over the
+  maintainer's GitHub account could still publish a bad release.
 - **Docker and the host.** The containers are locked down, but Docker itself runs as root,
   and anyone with access to the machine can read `pb_data`. The data on disk is not
   encrypted, so encrypt backups that leave the machine and wipe the disk before you sell it.
@@ -96,10 +101,10 @@ yourself: see [Synology without SSH](synology.md#without-ssh) and
 
 ### Pin a version
 
-To decide yourself when to update, pin an image to the commit it was built from instead of
-`latest`, in the app's `.env`, for example
-`FLOWY_IMAGE=ghcr.io/selfhostit/flowy:<commit>` or `SPLITWIZ_VERSION=<commit>`. The commit
-hashes are in each repository's history; should-we already pins its major version (`:2`).
+To decide yourself when to update, pin an image to a release instead of `latest`, in the
+app's `.env`: `FLOWY_IMAGE=ghcr.io/selfhostit/flowy:1.2.0` (one release) or `:1` (every 1.x),
+or `SPLITWIZ_VERSION=1.2.0`. should-we follows its major version (`:2`). The releases and
+what changed in each are on each repository's Releases page and in its `CHANGELOG.md`.
 
 ## Project status
 
@@ -115,8 +120,6 @@ is MIT licensed so anyone can keep building it, and your data is a SQLite databa
 
 These are planned, in roughly this order:
 
-- Versioned releases with signed images, so an install updates to a release you can verify,
-  not to whatever is on `main`.
 - Splitwiz and should-we running as a normal user inside their containers, like Flowy and Troye.
 - A "sign out everywhere" button in every app (Flowy has it), for a lost phone.
 - An OpenSSF Scorecard run on each repository.
