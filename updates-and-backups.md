@@ -55,12 +55,20 @@ On a Synology without SSH: Container Manager > Image, select the app's image and
 
 Each app keeps everything in the `pb_data` folder inside its own folder, and makes a nightly
 backup into `pb_data/backups`, keeping the last 7. Those stay on the same disk, so also keep
-a copy somewhere else:
+a copy somewhere else. The data is private (Flowy holds health data), so encrypt any copy
+that leaves the machine, and leave out the `tailscale` folder: it holds the machine's
+Tailscale key, which lets whoever has it join your tailnet as that machine.
 
-- **Synology:** add the `docker` folder to a **Hyper Backup** task.
-- **Other NAS:** include the apps' folders in its backup or snapshot schedule.
-- **Linux or a Pi:** copy the folder to another disk or computer from time to time, for
-  example with `rsync -a ~/selfhostit/ otherhost:backups/selfhostit/`.
+- **Synology:** add the apps' `pb_data` folders to a **Hyper Backup** task with
+  **client-side encryption** turned on.
+- **Other NAS:** include the apps' `pb_data` folders in its backup or snapshot schedule,
+  encrypted if it goes off the NAS.
+- **Linux or a Pi:** copy the `pb_data` folders to another disk or computer from time to
+  time, for example with `rsync -a --exclude tailscale ~/selfhostit/ otherhost:backups/selfhostit/`,
+  to an encrypted disk.
+
+Selling or throwing away the machine or its SD card? Delete the apps' folders and wipe the
+disk first; the data on it is not encrypted.
 
 To restore, stop the app (`docker compose down`), put `pb_data` back, and start it again
 (`docker compose up -d`).
