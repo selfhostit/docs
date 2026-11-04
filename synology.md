@@ -21,7 +21,14 @@ It asks for your DSM password, which apps you want, and a folder (`/volume1/dock
 default, one folder per app). The apps show up in Container Manager under **Project**,
 where you can see their logs, stop and start them.
 
-You can turn SSH off again afterwards; you only need it to update.
+Turn SSH off again afterwards (Control Panel > Terminal & SNMP); you only need it to
+update, and an SSH login with your DSM password is the easiest way into the NAS.
+
+**Keep the `docker` folder private.** It holds every app's database, backups and setup
+code, and anyone who can open it over the network can copy them. In Control Panel >
+Shared Folder, select `docker` > **Edit**: on **Permissions**, give *administrators*
+Read/Write and every other user and group No access; on **General**, tick *Hide this
+shared folder in "My Network Places"*. Don't sync it with Synology Drive or Cloud Sync.
 
 ## Without SSH
 
