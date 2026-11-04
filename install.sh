@@ -4,6 +4,9 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | sh
 #
+# To read it before running it, download it first (curl -fsSLO <the same URL>),
+# then run `sh install.sh`. security.md says what it does, step by step.
+#
 # It asks which apps you want, gives each one its own folder and port, and runs
 # that app's own installer (or its compose file). Then it can put them all on
 # your Tailscale network with https:// addresses, which phones need: you sign in

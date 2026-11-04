@@ -28,6 +28,17 @@ It can also set up [Tailscale](phones.md#tailscale-recommended), so your phones 
 over HTTPS, which they need to install an app and get notifications. You only open a link to
 sign in; there are no keys or settings to copy. Then [put the apps on your phones](phones.md).
 
+Prefer to read a script before you run it? Download it, read it, then run it:
+
+```sh
+curl -fsSLO https://raw.githubusercontent.com/selfhostit/docs/main/install.sh
+less install.sh
+sh install.sh
+```
+
+[Security and privacy](security.md) says step by step what it does, what the apps protect
+and what you are trusting.
+
 ## Guides
 
 - [Raspberry Pi and Linux](linux.md): a Pi, a mini PC, an old laptop or a VPS.
@@ -36,6 +47,7 @@ sign in; there are no keys or settings to copy. Then [put the apps on your phone
   CasaOS and anything else that takes a Compose file.
 - [Use them on your phones](phones.md): Tailscale, or a reverse proxy with your own domain.
 - [Updates and backups](updates-and-backups.md)
+- [Security and privacy](security.md): how your data is protected, and how to report a problem.
 
 ## What you need
 
