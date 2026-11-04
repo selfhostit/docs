@@ -25,7 +25,7 @@ with what you found and how to reproduce it; see [SECURITY.md](https://github.co
 | What | Where |
 |---|---|
 | Apps listen on `127.0.0.1` only, so only this machine (and Tailscale or a reverse proxy on it) can connect | `ports:` in each app's compose file, for example [Flowy](https://github.com/selfhostit/flowy/blob/main/deploy/docker-compose.yml) |
-| Containers run as a normal user, with every Linux capability dropped and `no-new-privileges` | same compose files: `user:`, `cap_drop: [ALL]`, `security_opt` |
+| Containers drop every Linux capability and can't gain new privileges; Flowy and Troye also run as a normal user (Splitwiz and should-we not yet) | same compose files: `cap_drop: [ALL]`, `security_opt`, `user:` |
 | One-time setup code: the first account (the owner) can only be made with the code printed at install, which is deleted after setup | `backend/app/setup.go` in [plasto](https://github.com/selfhostit/plasto/blob/main/backend/app/setup.go), Flowy, Troye and Splitwiz |
 | Sign-in rate limits: 10 password attempts a minute for people and for the admin UI, 5 a minute for setup | `backend/migrations/*_rate_limits.go` in each app |
 | Access rules on every collection: people only see their own records or their group's | the collection API rules in `backend/migrations` |
@@ -117,6 +117,7 @@ These are planned, in roughly this order:
 
 - Versioned releases with signed images, so an install updates to a release you can verify,
   not to whatever is on `main`.
+- Splitwiz and should-we running as a normal user inside their containers, like Flowy and Troye.
 - A "sign out everywhere" button in every app (Flowy has it), for a lost phone.
 - An OpenSSF Scorecard run on each repository.
 
