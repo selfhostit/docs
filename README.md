@@ -39,6 +39,18 @@ sh install.sh
 [Security and privacy](security.md) says step by step what it does, what the apps protect
 and what you are trusting.
 
+## Security in short
+
+The apps keep their data on your machine, in one folder each, with no selfhostit cloud and no
+analytics. They listen on `127.0.0.1` only and are reached through Tailscale or your own
+reverse proxy, never a forwarded port. Containers drop every Linux capability, a new install
+asks for a one-time setup code, sign-ins are rate limited and the web apps send a Content
+Security Policy. CI runs the tests on every change, with Actions pinned to commit hashes.
+Updates follow versioned releases, and each image has a signed attestation of the commit that
+built it. Not done yet: an independent audit.
+Details, with links to the code: [Security and privacy](security.md). Report a problem to
+kalfasyan@pm.me ([policy](https://github.com/selfhostit/.github/blob/main/SECURITY.md)).
+
 ## Guides
 
 - [Raspberry Pi and Linux](linux.md): a Pi, a mini PC, an old laptop or a VPS.
