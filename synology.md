@@ -58,6 +58,11 @@ Two ways, both described in [phones](phones.md):
   walks through it step by step; repeat the reverse proxy step for each app with its own
   name, such as `flowy.<your-name>.synology.me` to port 8092.
 
+Either way, don't forward the apps' ports (8090 to 8093) or DSM's own ports (5000, 5001) in
+your router, and leave DSM's **QuickConnect** off unless you use it: they put the apps or
+DSM's sign-in page on the internet, where bots try passwords all day. With a public address,
+forward only 443 to DSM's reverse proxy.
+
 ## Updating and backups
 
 With SSH on, `selfhostit update splitwiz` (or `flowy`, or `all`) pulls and restarts an app in

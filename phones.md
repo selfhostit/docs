@@ -52,6 +52,16 @@ their `docs/deploy.md`.
 Everyone who uses the apps needs to be on your tailnet. That suits a household; to share a
 should-we decision with friends, use a public address instead.
 
+**Keep your tailnet private.** Whoever gets into your Tailscale account can reach every app,
+so:
+
+- Turn on two-factor sign-in for the account you sign in to Tailscale with (Google, GitHub,
+  Microsoft or Apple).
+- Remove phones and computers you no longer use from the
+  [machines page](https://login.tailscale.com/admin/machines), straight away for a lost one.
+- Share the `selfhostit` machine with someone else's account (**Share** on the machines page)
+  instead of inviting them into your tailnet, so they reach the apps and nothing else of yours.
+
 ## Your own domain with a reverse proxy
 
 For public addresses such as `https://splitwiz.example.com`:
@@ -75,6 +85,11 @@ For public addresses such as `https://splitwiz.example.com`:
   ```
 
 - **Without opening your router:** a Cloudflare Tunnel does the same from the inside.
+
+Forward only port 443, and only to the reverse proxy. Never forward an app's own port (8090
+to 8093) in your router: that serves the app over plain `http://`, so passwords cross the
+internet unencrypted, and it skips the proxy. Turn off **UPnP** in the router too, so no
+device on your network can open a port by itself.
 
 ## Install the app on the phone
 
