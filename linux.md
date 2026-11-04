@@ -38,7 +38,9 @@ The installer:
    second link to allow HTTPS. Open them on your computer or phone.
 
 When it is done it lists every app with its address: `https://selfhostit.<your-tailnet>.ts.net:8090`
-with Tailscale, or `http://localhost:8090` on the machine itself without it. Each app only
+with Tailscale, or `http://localhost:8090` on the machine itself without it. A new app also
+gets a one-time setup code, listed under its address: its setup screen asks for it when you
+create the first account, so nobody else can set it up. Each app only
 listens on the machine and on your Tailscale network, so nothing is open to the rest of your
 network or the internet. Then [install the apps on your phones](phones.md).
 
