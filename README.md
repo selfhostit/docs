@@ -11,7 +11,8 @@ install the same way, with Docker.
 | [Flowy](https://github.com/selfhostit/flowy) | A private period and cycle tracker | 8092 |
 | [Troye](https://github.com/selfhostit/troye) | A private calorie and weight tracker (work in progress) | 8093 |
 
-The port is where the installer puts each app, so they can all run on one machine.
+The port is where the installer puts each app, so they can all run on one machine. If
+another program already has it, the app gets the next free port, and keeps that one.
 
 ## Quick start
 
