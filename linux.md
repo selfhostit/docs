@@ -55,9 +55,9 @@ curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh |
 
 ## Good to know
 
-- **Ports:** Splitwiz 8090, should-we 8091, Flowy 8092, Troye 8093. If another program
-  already has one of these when an app is first installed, that app gets the next free
-  port instead, and the list at the end shows it. An app keeps its port from then on. To
+- **Ports:** Splitwiz 8090, should-we 8091, Flowy 8092, Troye 8093, Shoppa 8094,
+  Calio 8095. If another program already has one of these when an app is first installed,
+  that app gets the next free port instead, and the list at the end shows it. An app keeps its port from then on. To
   change one, edit the port in that app's `.env` and run the installer again.
 - **Restarts:** the apps start again by themselves when the machine reboots.
 - **SD cards** wear out with a database writing to them. A USB SSD is more reliable, and
