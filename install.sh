@@ -68,32 +68,33 @@ fetch() {
 pins() {
 	cat <<-'EOF'
 	# pins start
-	splitwiz v1.0.0 scripts/install.sh c7ce9f5027d5e9f85473734edc4f5ec50b4ad611f12ac7836efd8c51e4a18f0f
-	splitwiz v1.0.0 docker-compose.yml 84d675d0e3f26e823014d111f1454d1dab9a913a126114e27e7e28bc6429d642
-	should-we v2.2.0 docker-compose.yml 57a54827444aefe86c60a7adcf4980cd3bfc57c844bcef946e12265e43d2b27b
-	flowy v1.0.0 deploy/install.sh 023ce978e85a53569b5a1851bc0c3d2be3e18a871c5a80187e560bb39cb14157
-	flowy v1.0.0 deploy/docker-compose.yml abad48850d4362542d2f9cf5aad47c8a3237ae2f2576e028f67c6a6ba7536692
-	flowy v1.0.0 deploy/docker-compose.tailscale.yml ab341609f947775a155d97532241fdcf1afdfc028641062aeb8ebbd59b0ba3ae
-	flowy v1.0.0 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
-	flowy v1.0.0 deploy/.env.example 60a5432413fab9203a3f8dcc60f900b8448765ee708c8f1eede57e3e162ea6f5
-	troye v0.1.0 deploy/install.sh 718645408f9941e7266d2f5ad2e944e01bcf5e3e8574b97e27e600e4e4f1affa
-	troye v0.1.0 deploy/docker-compose.yml 93d1aab609ec3c680bcdb4eb1e059bceca98cee1607df3cb66bf0f8e24e7ab4e
-	troye v0.1.0 deploy/docker-compose.tailscale.yml b2c98d1a3374481dac364231ac1559daa924e104a7bff04dcb4d936f06f5faea
-	troye v0.1.0 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
-	troye v0.1.0 deploy/docker-compose.host.yml 04812d2b8d78e5e0f8af6c94d71be23e246c03a39446fa853a262e13fdacc53a
-	troye v0.1.0 deploy/.env.example de3c1e179895c0737793537a9c1c416ba20221fafe55d648d92a78ac9c7c4759
-	shoppa v0.1.0 deploy/install.sh 63269c1b7a241135b529ab771b091783455de64b4ca677a98b51e1eec246278c
-	shoppa v0.1.0 deploy/docker-compose.yml 5713a851bf43dcce1dbfce424a2e5ad5ea7a1eaca640c5654c8161341d561a79
-	shoppa v0.1.0 deploy/docker-compose.tailscale.yml 3c37d7a5b654176f3de8bee616f0e3164979e43d47d59dd33b38b29e4e215f5c
-	shoppa v0.1.0 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
-	shoppa v0.1.0 deploy/.env.example b506f4d369127aa9ea32145a26d60a51f26f65704c43a1177ecd428abab084e2
-	calio v0.1.0 deploy/install.sh 8208c1c22ff27ed90bbf1cbc211ca6360953e76c0070b2c9d613b0426db53079
-	calio v0.1.0 deploy/docker-compose.yml f6ba1105ed63552c6c299fabd91a8a5cd05638ce1255e7c5e0399cdfa5540b4f
-	calio v0.1.0 deploy/docker-compose.tailscale.yml bbe8e5437acc4bfebfc6573f3ee5320a28cccc396d951587e23e1be550f54451
-	calio v0.1.0 deploy/docker-compose.funnel.yml 3bb101d4cc6e33304d077312071cd5f5ec1f6ad6a70d2032ca313d3d0a1df49b
-	calio v0.1.0 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
-	calio v0.1.0 deploy/tailscale-feed-serve.json ff25f48fd37d41560c3f588553451217b152b64a9a57342d60b5152606ffc343
-	calio v0.1.0 deploy/.env.example 66c2ef5426e323127f4684ddf4d49f5abcea67948f39ddb3d795157ec39c11eb
+	splitwiz v1.0.1 scripts/install.sh 52b13f22478f03235122445f5e5af4e9a77c25b73973ae4e6c84e7a410f00592
+	splitwiz v1.0.1 docker-compose.yml 2daf2dd844f7766bbe1e145a4954f673299d0ede595d43d748c526a331cec752
+	should-we v2.2.1 docker-compose.yml 633a2e85d6e452107137797970f2ff841cebf3d6734f00cf1d941ccdbc48cc65
+	flowy v1.0.1 deploy/install.sh 8837d27156bbc06e0add12b73a7b0b95ce39734be0a744b7fbd771d12e3ad2ea
+	flowy v1.0.1 deploy/docker-compose.yml 168fd2068af64e78f6e974362fa9600cda5e56fbac732efc374ce641f5352a01
+	flowy v1.0.1 deploy/docker-compose.tailscale.yml ab341609f947775a155d97532241fdcf1afdfc028641062aeb8ebbd59b0ba3ae
+	flowy v1.0.1 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
+	flowy v1.0.1 deploy/.env.example 60a5432413fab9203a3f8dcc60f900b8448765ee708c8f1eede57e3e162ea6f5
+	troye v0.1.1 deploy/install.sh 89b7e96d50869f8c91b935d2507e87bc1119ff704884ed6943a79cc71e4b8220
+	troye v0.1.1 deploy/docker-compose.yml 479d3d020918ef56e6e24049e37e805d7d61e24efe147fb3878eb351d2ba7430
+	troye v0.1.1 deploy/docker-compose.tailscale.yml b2c98d1a3374481dac364231ac1559daa924e104a7bff04dcb4d936f06f5faea
+	troye v0.1.1 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
+	troye v0.1.1 deploy/docker-compose.host.yml 04812d2b8d78e5e0f8af6c94d71be23e246c03a39446fa853a262e13fdacc53a
+	troye v0.1.1 deploy/.env.example de3c1e179895c0737793537a9c1c416ba20221fafe55d648d92a78ac9c7c4759
+	shoppa v0.1.1 deploy/install.sh 8d06e189c1a0dbb13deb8c2ce9a6de26914fd41acecc6843ed2f1e585ed021fb
+	shoppa v0.1.1 deploy/docker-compose.yml 8e9ad2407bb197e63252774cd9e91782a9984fcd924290c8fc66ab8965cb9f0e
+	shoppa v0.1.1 deploy/docker-compose.tailscale.yml 3c37d7a5b654176f3de8bee616f0e3164979e43d47d59dd33b38b29e4e215f5c
+	shoppa v0.1.1 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
+	shoppa v0.1.1 deploy/.env.example b506f4d369127aa9ea32145a26d60a51f26f65704c43a1177ecd428abab084e2
+	calio v0.1.1 deploy/install.sh a81550ca4fecf22d4bd032cbc0e3f93a59f05c209ab63664336ec7a6c1ee9643
+	calio v0.1.1 deploy/docker-compose.yml 60be31fe42b628f2f5561998146e1d222e9d18a4c348a72558cb48b4bb311b76
+	calio v0.1.1 deploy/docker-compose.tailscale.yml bbe8e5437acc4bfebfc6573f3ee5320a28cccc396d951587e23e1be550f54451
+	calio v0.1.1 deploy/docker-compose.funnel.yml 573b7b67cdd9347ef056e74e33558087b3e0b6c59379783b2bf288f1163207ff
+	calio v0.1.1 deploy/docker-compose.shoppa.yml 73ff94faf531055ad5ba7f694f878237f6c5213bd49eb0e95dd1e757acb457f6
+	calio v0.1.1 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
+	calio v0.1.1 deploy/tailscale-feed-serve.json 64d154aae85ca2e9fe9a462446d9643459313adbabcc754b807ab1a1a4f2d7b2
+	calio v0.1.1 deploy/.env.example 1cf7b922f98d60ce8720b6d9801b9c96f07f942ebc026d7ca2c061289d9ad398
 	# pins end
 	EOF
 }
