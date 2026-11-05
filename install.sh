@@ -20,7 +20,7 @@
 # per app), TZ, and TS_AUTHKEY (a Tailscale auth key, to sign in without the link).
 set -eu
 
-apps="splitwiz should-we flowy troye"
+apps="splitwiz should-we flowy troye shoppa calio"
 
 # name, port, what it does
 info() {
@@ -29,6 +29,8 @@ info() {
 	should-we) echo "8091|Pick one option together, as a group" ;;
 	flowy) echo "8092|A private period and cycle tracker" ;;
 	troye) echo "8093|A private calorie and weight tracker" ;;
+	shoppa) echo "8094|A shared shopping list for your household" ;;
+	calio) echo "8095|One calendar for your household: plans, pet sitting, trips" ;;
 	*) return 1 ;;
 	esac
 }
@@ -159,7 +161,7 @@ fi
 
 # --- Install ------------------------------------------------------------------
 
-# The plasto-based apps (Flowy, Troye) come with deploy/install.sh, which takes
+# The plasto-based apps (Flowy, Troye, Shoppa, Calio) come with deploy/install.sh, which takes
 # the folder as its argument and PORT for a new install (or the next free port
 # when that one is taken; Splitwiz's installer does the same). An empty TS_AUTHKEY
 # skips their own Tailscale question: the shared node below covers them.

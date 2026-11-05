@@ -89,6 +89,8 @@ It is one plain shell script with comments. What it does:
 3. For each app you pick, downloads and runs that app's own installer or compose file from
    GitHub ([Flowy](https://github.com/selfhostit/flowy/blob/main/deploy/install.sh),
    [Troye](https://github.com/selfhostit/troye/blob/main/deploy/install.sh),
+   [Shoppa](https://github.com/selfhostit/shoppa/blob/main/deploy/install.sh),
+   [Calio](https://github.com/selfhostit/calio/blob/main/deploy/install.sh),
    [Splitwiz](https://github.com/selfhostit/splitwiz/blob/main/scripts/install.sh),
    [should-we](https://github.com/selfhostit/should-we/blob/main/docker-compose.yml)).
    Read those too if you want to see every step.

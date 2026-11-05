@@ -27,8 +27,10 @@ The Compose files are in each app's repository:
 [Splitwiz](https://github.com/selfhostit/splitwiz/blob/main/docker-compose.yml),
 [should-we](https://github.com/selfhostit/should-we/blob/main/docker-compose.yml),
 [Flowy](https://github.com/selfhostit/flowy/blob/main/deploy/docker-compose.yml),
-[Troye](https://github.com/selfhostit/troye/blob/main/deploy/docker-compose.yml).
+[Troye](https://github.com/selfhostit/troye/blob/main/deploy/docker-compose.yml),
+[Shoppa](https://github.com/selfhostit/shoppa/blob/main/deploy/docker-compose.yml),
+[Calio](https://github.com/selfhostit/calio/blob/main/deploy/docker-compose.yml).
 Replace `./pb_data` with a full path on your pool, give each app its own port (Splitwiz
-8090, should-we 8091, Flowy 8092, Troye 8093), and set your time zone in `TZ`.
+8090, should-we 8091, Flowy 8092, Troye 8093, Shoppa 8094, Calio 8095), and set your time zone in `TZ`.
 
 Then follow [phones](phones.md) to reach them over HTTPS.

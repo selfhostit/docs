@@ -40,11 +40,13 @@ Container Manager > Project > Create, once per app:
   [Splitwiz](https://github.com/selfhostit/splitwiz/blob/main/docker-compose.yml),
   [should-we](https://github.com/selfhostit/should-we/blob/main/docker-compose.yml),
   [Flowy](https://github.com/selfhostit/flowy/blob/main/deploy/docker-compose.yml),
-  [Troye](https://github.com/selfhostit/troye/blob/main/deploy/docker-compose.yml)
+  [Troye](https://github.com/selfhostit/troye/blob/main/deploy/docker-compose.yml),
+  [Shoppa](https://github.com/selfhostit/shoppa/blob/main/deploy/docker-compose.yml),
+  [Calio](https://github.com/selfhostit/calio/blob/main/deploy/docker-compose.yml)
 
 In the pasted file, set the port so two apps don't share one (the number after `:-` in the
-`ports:` line: Splitwiz 8090, should-we 8091, Flowy 8092, Troye 8093), and your time zone
-in the `TZ` line. For Flowy and Troye, also set `PUID` and `PGID` to your DSM user's ids
+`ports:` line: Splitwiz 8090, should-we 8091, Flowy 8092, Troye 8093, Shoppa 8094, Calio
+8095), and your time zone in the `TZ` line. For Flowy, Troye, Shoppa and Calio, also set `PUID` and `PGID` to your DSM user's ids
 (run `id` over SSH, or leave them at 1000 and give that user the folder).
 
 ## 3. Reach them from your phones
@@ -58,7 +60,7 @@ Two ways, both described in [phones](phones.md):
   walks through it step by step; repeat the reverse proxy step for each app with its own
   name, such as `flowy.<your-name>.synology.me` to port 8092.
 
-Either way, don't forward the apps' ports (8090 to 8093) or DSM's own ports (5000, 5001) in
+Either way, don't forward the apps' ports (8090 to 8095) or DSM's own ports (5000, 5001) in
 your router, and leave DSM's **QuickConnect** off unless you use it: they put the apps or
 DSM's sign-in page on the internet, where bots try passwords all day. With a public address,
 forward only 443 to DSM's reverse proxy.

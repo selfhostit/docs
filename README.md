@@ -10,6 +10,8 @@ install the same way, with Docker.
 | [should-we](https://github.com/selfhostit/should-we) | Pick one option together, as a group | 8091 |
 | [Flowy](https://github.com/selfhostit/flowy) | A private period and cycle tracker | 8092 |
 | [Troye](https://github.com/selfhostit/troye) | A private calorie and weight tracker | 8093 |
+| [Shoppa](https://github.com/selfhostit/shoppa) | A shared shopping list for your household | 8094 |
+| [Calio](https://github.com/selfhostit/calio) | One calendar for your household: plans, pet sitting and trips | 8095 |
 
 The port is where the installer puts each app, so they can all run on one machine. If
 another program already has it, the app gets the next free port, and keeps that one.
