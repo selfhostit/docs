@@ -1,0 +1,51 @@
+name: release
+
+# Publishes a release of the installer: install.sh and the selfhostit command as
+# downloads, their SHA-256 sums, and a signed attestation of the workflow and commit
+# they came from. People install from
+# https://github.com/selfhostit/docs/releases/latest/download/install.sh.
+#
+#   gh workflow run release.yml --repo selfhostit/docs -f version=v1.2.0
+#
+# Releases are immutable, so the files go in when the release is created.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version tag, like v1.2.0
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to create the release and its tag
+      id-token: write # to sign the attestation
+      attestations: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check the version
+        run: |
+          echo "$VERSION" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || { echo "not a version like v1.2.0: $VERSION"; exit 1; }
+        env:
+          VERSION: ${{ inputs.version }}
+      - name: Check the pinned app files
+        run: scripts/pin-apps.sh --check
+      - name: SHA-256 sums
+        run: sha256sum install.sh selfhostit > SHA256SUMS && cat SHA256SUMS
+      - name: Attest the files
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            install.sh
+            selfhostit
+      - name: Publish the release
+        run: |
+          gh release create "$VERSION" install.sh selfhostit SHA256SUMS \
+            --target "$GITHUB_SHA" --title "Installer $VERSION" --generate-notes
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}

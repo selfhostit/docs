@@ -3,6 +3,9 @@ on:
   push:
     branches: [main]
   pull_request:
+  # weekly, to notice a pinned file that changed on GitHub or an app with a newer release
+  schedule:
+    - cron: '7 6 * * 1'
 
 permissions:
   contents: read
@@ -12,7 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - run: shellcheck -s sh install.sh
-      - run: sh -n install.sh
-      - run: shellcheck -s sh selfhostit
-      - run: sh -n selfhostit
+      - run: shellcheck -s sh install.sh selfhostit scripts/pin-apps.sh
+      - run: sh -n install.sh && sh -n selfhostit && sh -n scripts/pin-apps.sh
+
+  # Every file install.sh downloads must still have the SHA-256 it pins.
+  pins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: scripts/pin-apps.sh --check

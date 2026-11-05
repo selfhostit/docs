@@ -2,10 +2,14 @@
 # Installs or updates selfhostit apps on this machine with Docker: a Raspberry Pi,
 # a Linux server or VPS, or a NAS with SSH and Docker (Synology, QNAP, Unraid, ...).
 #
-#   curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | sh
+#   curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sh
 #
-# To read it before running it, download it first (curl -fsSLO <the same URL>),
-# then run `sh install.sh`. security.md says what it does, step by step.
+# That is the newest release of this installer. To read and check it before running it,
+# download it first (curl -fsSLO <the same URL>), then run `sh install.sh`; security.md
+# says what it does step by step and how to verify it.
+#
+# It installs a fixed release of each app, listed below with the SHA-256 of every file
+# it downloads for it, and stops if a download doesn't match.
 #
 # It asks which apps you want, gives each one its own folder and port (the next
 # free one when another program has the usual port), and runs
@@ -55,6 +59,71 @@ ask() {
 fetch() {
 	if command -v curl >/dev/null; then curl -fsSL "$1"; else wget -qO- "$1"; fi
 }
+
+# --- Pinned releases ------------------------------------------------------------
+
+# The release of each app this installer sets up, and the SHA-256 of every file it
+# downloads from it: app, tag, file, SHA-256. scripts/pin-apps.sh writes this list
+# after a release, and CI checks it against GitHub.
+pins() {
+	cat <<-'EOF'
+	# pins start
+	splitwiz v1.0.0 scripts/install.sh c7ce9f5027d5e9f85473734edc4f5ec50b4ad611f12ac7836efd8c51e4a18f0f
+	splitwiz v1.0.0 docker-compose.yml 84d675d0e3f26e823014d111f1454d1dab9a913a126114e27e7e28bc6429d642
+	should-we v2.2.0 docker-compose.yml 57a54827444aefe86c60a7adcf4980cd3bfc57c844bcef946e12265e43d2b27b
+	flowy v1.0.0 deploy/install.sh 023ce978e85a53569b5a1851bc0c3d2be3e18a871c5a80187e560bb39cb14157
+	flowy v1.0.0 deploy/docker-compose.yml abad48850d4362542d2f9cf5aad47c8a3237ae2f2576e028f67c6a6ba7536692
+	flowy v1.0.0 deploy/docker-compose.tailscale.yml ab341609f947775a155d97532241fdcf1afdfc028641062aeb8ebbd59b0ba3ae
+	flowy v1.0.0 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
+	flowy v1.0.0 deploy/.env.example 60a5432413fab9203a3f8dcc60f900b8448765ee708c8f1eede57e3e162ea6f5
+	troye v0.1.0 deploy/install.sh 718645408f9941e7266d2f5ad2e944e01bcf5e3e8574b97e27e600e4e4f1affa
+	troye v0.1.0 deploy/docker-compose.yml 93d1aab609ec3c680bcdb4eb1e059bceca98cee1607df3cb66bf0f8e24e7ab4e
+	troye v0.1.0 deploy/docker-compose.tailscale.yml b2c98d1a3374481dac364231ac1559daa924e104a7bff04dcb4d936f06f5faea
+	troye v0.1.0 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
+	troye v0.1.0 deploy/docker-compose.host.yml 04812d2b8d78e5e0f8af6c94d71be23e246c03a39446fa853a262e13fdacc53a
+	troye v0.1.0 deploy/.env.example de3c1e179895c0737793537a9c1c416ba20221fafe55d648d92a78ac9c7c4759
+	shoppa v0.1.0 deploy/install.sh 63269c1b7a241135b529ab771b091783455de64b4ca677a98b51e1eec246278c
+	shoppa v0.1.0 deploy/docker-compose.yml 5713a851bf43dcce1dbfce424a2e5ad5ea7a1eaca640c5654c8161341d561a79
+	shoppa v0.1.0 deploy/docker-compose.tailscale.yml 3c37d7a5b654176f3de8bee616f0e3164979e43d47d59dd33b38b29e4e215f5c
+	shoppa v0.1.0 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
+	shoppa v0.1.0 deploy/.env.example b506f4d369127aa9ea32145a26d60a51f26f65704c43a1177ecd428abab084e2
+	calio v0.1.0 deploy/install.sh 8208c1c22ff27ed90bbf1cbc211ca6360953e76c0070b2c9d613b0426db53079
+	calio v0.1.0 deploy/docker-compose.yml f6ba1105ed63552c6c299fabd91a8a5cd05638ce1255e7c5e0399cdfa5540b4f
+	calio v0.1.0 deploy/docker-compose.tailscale.yml bbe8e5437acc4bfebfc6573f3ee5320a28cccc396d951587e23e1be550f54451
+	calio v0.1.0 deploy/docker-compose.funnel.yml 3bb101d4cc6e33304d077312071cd5f5ec1f6ad6a70d2032ca313d3d0a1df49b
+	calio v0.1.0 deploy/tailscale-serve.json a04bce87030f08074a9e9ebf5e79d0ce7507531eecdde73ad27e17098fb77a9d
+	calio v0.1.0 deploy/tailscale-feed-serve.json ff25f48fd37d41560c3f588553451217b152b64a9a57342d60b5152606ffc343
+	calio v0.1.0 deploy/.env.example 66c2ef5426e323127f4684ddf4d49f5abcea67948f39ddb3d795157ec39c11eb
+	# pins end
+	EOF
+}
+
+sha256() {
+	if command -v sha256sum >/dev/null; then
+		sha256sum | cut -d' ' -f1
+	elif command -v shasum >/dev/null; then
+		shasum -a 256 | cut -d' ' -f1
+	else
+		die "sha256sum or shasum is needed to check the downloads"
+	fi
+}
+
+# fetch_app APP DIR: downloads APP's pinned files into DIR, keeping their paths,
+# and stops unless each one has its pinned SHA-256
+fetch_app() {
+	pins | grep -v '^#' | while read -r name tag path sum; do
+		[ "$name" = "$1" ] || continue
+		mkdir -p "$2/$(dirname "$path")"
+		fetch "https://raw.githubusercontent.com/selfhostit/$name/$tag/$path" >"$2/$path" ||
+			die "could not download $path of $name $tag"
+		got=$(sha256 <"$2/$path")
+		[ "$got" = "$sum" ] || die "$path of $name $tag is not the reviewed file (SHA-256 $got); not installing it"
+	done
+	[ -n "$(pins | awk -v a="$1" '$1 == a')" ] || die "no pinned release of $1"
+}
+
+# app_tag APP: the pinned release of APP
+app_tag() { pins | awk -v a="$1" '$1 == a { print $2; exit }'; }
 
 # --- Docker -------------------------------------------------------------------
 
@@ -161,24 +230,23 @@ fi
 
 # --- Install ------------------------------------------------------------------
 
+# Each app's files are downloaded into a scratch folder and checked first (fetch_app).
 # The plasto-based apps (Flowy, Troye, Shoppa, Calio) come with deploy/install.sh, which takes
 # the folder as its argument and PORT for a new install (or the next free port
-# when that one is taken; Splitwiz's installer does the same). An empty TS_AUTHKEY
-# skips their own Tailscale question: the shared node below covers them.
+# when that one is taken; Splitwiz's installer does the same). Run from the scratch
+# folder, they use the checked files next to them. An empty TS_AUTHKEY skips their
+# own Tailscale question: the shared node below covers them.
 install_plasto() { # app port dir
-	fetch "https://raw.githubusercontent.com/selfhostit/$1/main/deploy/install.sh" |
-		$sudo env PORT="$2" TS_AUTHKEY= sh -s -- "$3"
+	$sudo env PORT="$2" TS_AUTHKEY= sh "$tmp/$1/deploy/install.sh" "$3"
 }
 
 install_splitwiz() { # port dir
-	fetch https://raw.githubusercontent.com/selfhostit/splitwiz/main/scripts/install.sh |
-		SPLITWIZ_DIR="$2" SPLITWIZ_PORT="$1" sh
+	SPLITWIZ_DIR="$2" SPLITWIZ_PORT="$1" sh "$tmp/splitwiz/scripts/install.sh"
 }
 
 install_should_we() { # port dir
 	$sudo mkdir -p "$2/pb_data"
-	fetch https://raw.githubusercontent.com/selfhostit/should-we/main/docker-compose.yml |
-		$sudo tee "$2/docker-compose.yml" >/dev/null
+	$sudo cp "$tmp/should-we/docker-compose.yml" "$2/docker-compose.yml"
 	if [ ! -f "$2/.env" ]; then
 		port=$(free_port "$1")
 		[ "$port" = "$1" ] || echo "Port $1 is taken, so should-we gets port $port."
@@ -188,11 +256,14 @@ install_should_we() { # port dir
 	(cd "$2" && $sudo docker compose pull --quiet && $sudo docker compose up -d --remove-orphans)
 }
 
+tmp=$(mktemp -d)
+trap 'rm -r "$tmp"' EXIT
 for app in $chosen; do
 	port=$(info "$app" | cut -d'|' -f1)
 	dir=$base/$app
 	echo
-	say "== $app"
+	say "== $app $(app_tag "$app")"
+	fetch_app "$app" "$tmp/$app"
 	$sudo mkdir -p "$dir"
 	# Run each installer from its own folder, so none of them mistakes this
 	# folder for a checkout of its repository.

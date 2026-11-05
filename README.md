@@ -21,7 +21,7 @@ another program already has it, the app gets the next free port, and keeps that 
 On a Raspberry Pi, a Linux server or a NAS you can reach over SSH:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | sh
+curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sh
 ```
 
 It installs Docker if it is missing (on Linux), asks which apps you want and where to keep
@@ -31,13 +31,18 @@ It can also set up [Tailscale](phones.md#tailscale-recommended), so your phones 
 over HTTPS, which they need to install an app and get notifications. You only open a link to
 sign in; there are no keys or settings to copy. Then [put the apps on your phones](phones.md).
 
-Prefer to read a script before you run it? Download it, read it, then run it:
+Prefer to read and check a script before you run it? Download it, verify it, read it, then
+run it:
 
 ```sh
-curl -fsSLO https://raw.githubusercontent.com/selfhostit/docs/main/install.sh
+curl -fsSLO https://github.com/selfhostit/docs/releases/latest/download/install.sh
+gh attestation verify install.sh --repo selfhostit/docs
 less install.sh
 sh install.sh
 ```
+
+The installer is a signed release, and it installs a pinned release of each app, checking
+every file it downloads against its SHA-256.
 
 [Security and privacy](security.md) says step by step what it does, what the apps protect
 and what you are trusting.
@@ -46,13 +51,16 @@ and what you are trusting.
 
 The apps keep their data on your machine, in one folder each, with no selfhostit cloud and no
 analytics. They listen on `127.0.0.1` only and are reached through Tailscale or your own
-reverse proxy, never a forwarded port. Containers drop every Linux capability, a new install
-asks for a one-time setup code, sign-ins are rate limited and the web apps send a Content
-Security Policy. CI runs the tests on every change, with Actions pinned to commit hashes.
-Updates follow versioned releases, and each image has a signed attestation of the commit that
-built it. Not done yet: an independent audit.
-Details, with links to the code: [Security and privacy](security.md). Report a problem to
-kalfasyan@pm.me ([policy](https://github.com/selfhostit/.github/blob/main/SECURITY.md)).
+reverse proxy, never a forwarded port. Containers run as a normal user with no Linux
+capabilities and a read-only filesystem, a new install asks for a one-time setup code,
+passwords are stored as bcrypt hashes, sign-ins are rate limited and the web apps send a
+Content Security Policy. Every change, and every week, is scanned with CodeQL, govulncheck,
+Grype and gitleaks. Updates follow versioned releases, each image has a signed attestation
+of the commit that built it, and the installer pins each app's release with SHA-256 checks.
+Not done yet: an independent audit.
+Details, with links to the code: [Security and privacy](security.md). Report a problem
+privately through the app's Security tab on GitHub or to kalfasyan@pm.me
+([policy](https://github.com/selfhostit/.github/blob/main/SECURITY.md)).
 
 ## Guides
 

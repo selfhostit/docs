@@ -7,7 +7,7 @@ file can run them.
 Debian VM or LXC): sign in and run the installer, with `sudo` if your user can't use Docker.
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | sudo sh
+curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sudo sh
 ```
 
 On Unraid it suggests `/mnt/user/appdata`; anywhere else, pick a folder on your data pool
