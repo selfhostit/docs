@@ -165,8 +165,9 @@ It is one plain shell script with comments. What it does:
    starts the compose file ([should-we](https://github.com/selfhostit/should-we/blob/main/docker-compose.yml)).
 4. If you say yes, starts one Tailscale container and gives each app an `https://` address.
 
-The pinned list is updated with `scripts/pin-apps.sh` after an app's release, and CI checks
-every week that each pinned file still matches GitHub.
+The pinned list is updated by `scripts/pin-apps.sh`: an hourly workflow runs it after an
+app's release, once that release's images are built, and then publishes a new installer
+release. CI checks every week that each pinned file still matches GitHub.
 
 ### What needs sudo
 
