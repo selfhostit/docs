@@ -7,7 +7,8 @@
 # To read it before running it, download it first (curl -fsSLO <the same URL>),
 # then run `sh install.sh`. security.md says what it does, step by step.
 #
-# It asks which apps you want, gives each one its own folder and port, and runs
+# It asks which apps you want, gives each one its own folder and port (the next
+# free one when another program has the usual port), and runs
 # that app's own installer (or its compose file). Then it can put them all on
 # your Tailscale network with https:// addresses, which phones need: you sign in
 # with a link, no keys or settings. Run it again to update: every app keeps its
@@ -83,6 +84,28 @@ fi
 $sudo docker compose version >/dev/null 2>&1 ||
 	die "Docker Compose v2 is missing: https://docs.docker.com/compose/install/linux/"
 
+# taken_ports: the TCP ports that something on this machine listens on, and the
+# ones Docker containers publish (stopped ones too, so they can start again)
+taken_ports() {
+	{ ss -ltn 2>/dev/null || netstat -an 2>/dev/null | awk '/^tcp/ && /LISTEN/'; } |
+		awk '{print $4}' | sed -n 's/.*[:.]\([0-9][0-9]*\)$/\1/p'
+	ids=$($sudo docker ps -aq 2>/dev/null) || ids=
+	# shellcheck disable=SC2086 # one argument per container
+	[ -z "$ids" ] || $sudo docker inspect --format \
+		'{{range .HostConfig.PortBindings}}{{range .}}{{.HostPort}} {{end}}{{end}}' $ids 2>/dev/null |
+		tr ' ' '\n'
+}
+
+# free_port PORT: PORT if nothing uses it, else the first free port after it
+free_port() {
+	taken=" $(taken_ports | tr '\n' ' ') "
+	p=$1
+	while :; do
+		case $taken in *" $p "*) p=$((p + 1)) ;; *) break ;; esac
+	done
+	echo "$p"
+}
+
 # --- Which apps ---------------------------------------------------------------
 
 chosen=$*
@@ -137,7 +160,8 @@ fi
 # --- Install ------------------------------------------------------------------
 
 # The plasto-based apps (Flowy, Troye) come with deploy/install.sh, which takes
-# the folder as its argument and PORT for a new install. An empty TS_AUTHKEY
+# the folder as its argument and PORT for a new install (or the next free port
+# when that one is taken; Splitwiz's installer does the same). An empty TS_AUTHKEY
 # skips their own Tailscale question: the shared node below covers them.
 install_plasto() { # app port dir
 	fetch "https://raw.githubusercontent.com/selfhostit/$1/main/deploy/install.sh" |
@@ -154,8 +178,10 @@ install_should_we() { # port dir
 	fetch https://raw.githubusercontent.com/selfhostit/should-we/main/docker-compose.yml |
 		$sudo tee "$2/docker-compose.yml" >/dev/null
 	if [ ! -f "$2/.env" ]; then
+		port=$(free_port "$1")
+		[ "$port" = "$1" ] || echo "Port $1 is taken, so should-we gets port $port."
 		tz=${TZ:-$(cat /etc/timezone 2>/dev/null || readlink /etc/localtime 2>/dev/null | sed 's|.*zoneinfo/||' || true)}
-		printf 'SHOULD_WE_PORT=%s\nTZ=%s\n' "$1" "${tz:-UTC}" | $sudo tee "$2/.env" >/dev/null
+		printf 'SHOULD_WE_PORT=%s\nTZ=%s\n' "$port" "${tz:-UTC}" | $sudo tee "$2/.env" >/dev/null
 	fi
 	(cd "$2" && $sudo docker compose pull --quiet && $sudo docker compose up -d --remove-orphans)
 }
