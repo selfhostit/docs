@@ -9,7 +9,7 @@ install the same way, with Docker.
 | [Splitwiz](https://github.com/selfhostit/splitwiz) | Split shared costs with your partner or roommate | 8090 |
 | [should-we](https://github.com/selfhostit/should-we) | Pick one option together, as a group | 8091 |
 | [Flowy](https://github.com/selfhostit/flowy) | A private period and cycle tracker | 8092 |
-| [Troye](https://github.com/selfhostit/troye) | A private calorie and weight tracker (work in progress) | 8093 |
+| [Troye](https://github.com/selfhostit/troye) | A private calorie and weight tracker | 8093 |
 
 The port is where the installer puts each app, so they can all run on one machine. If
 another program already has it, the app gets the next free port, and keeps that one.
