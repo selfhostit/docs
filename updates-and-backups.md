@@ -5,10 +5,11 @@
 Run the installer again with the same apps:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | sh -s -- splitwiz flowy
+curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sh -s -- splitwiz flowy
 ```
 
-It downloads the newest version of each app and restarts it. Settings (`.env`) and data
+It installs the app releases it pins (the newest when it was released; each file is checked
+against its SHA-256) and restarts them. Settings (`.env`) and data
 (`pb_data`) are kept, and the database is upgraded on start. To update one app by hand, in
 its folder:
 
@@ -22,7 +23,7 @@ To update apps over SSH without the installer, install the `selfhostit` command 
 
 ```sh
 mkdir -p ~/bin
-curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/selfhostit -o ~/bin/selfhostit
+curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/selfhostit -o ~/bin/selfhostit
 chmod +x ~/bin/selfhostit
 echo 'export PATH="$HOME/bin:$PATH"' >> ~/.profile
 . ~/.profile
@@ -65,7 +66,13 @@ Tailscale key, which lets whoever has it join your tailnet as that machine.
   encrypted if it goes off the NAS.
 - **Linux or a Pi:** copy the `pb_data` folders to another disk or computer from time to
   time, for example with `rsync -a --exclude tailscale ~/selfhostit/ otherhost:backups/selfhostit/`,
-  to an encrypted disk.
+  to an encrypted disk. Or make one encrypted file with [age](https://age-encryption.org),
+  which asks for a passphrase:
+
+  ```sh
+  tar czf - --exclude tailscale -C ~/selfhostit . | age -p > selfhostit-$(date +%F).tar.gz.age
+  age -d selfhostit-2026-11-05.tar.gz.age | tar xzf -   # to restore it
+  ```
 
 Selling or throwing away the machine or its SD card? Delete the apps' folders and wipe the
 disk first; the data on it is not encrypted.

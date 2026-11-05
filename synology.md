@@ -14,7 +14,7 @@ shared folder.
 ## 2. Install the apps
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | sudo sh
+curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sudo sh
 ```
 
 It asks for your DSM password, which apps you want, and a folder (`/volume1/docker` by

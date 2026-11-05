@@ -20,7 +20,7 @@ ssh you@homeserver.local
 ## 2. Install the apps
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh | sh
+curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sh
 ```
 
 The installer:
@@ -49,7 +49,7 @@ network or the internet. Then [install the apps on your phones](phones.md).
 Name the apps after `sh -s --`, and set the folder with `SELFHOSTIT_DIR`:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/selfhostit/docs/main/install.sh |
+curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh |
   SELFHOSTIT_DIR=/srv/apps sh -s -- splitwiz flowy
 ```
 
