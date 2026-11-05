@@ -77,8 +77,35 @@ Tailscale key, which lets whoever has it join your tailnet as that machine.
 Selling or throwing away the machine or its SD card? Delete the apps' folders and wipe the
 disk first; the data on it is not encrypted.
 
-To restore, stop the app (`docker compose down`), put `pb_data` back, and start it again
-(`docker compose up -d`).
+## Restore a backup
+
+Try this once now, while nothing is wrong, so you know your backups work.
+
+**From a nightly backup, in the admin UI:** open the app's `/_/` (through Tailscale or on
+the machine itself), sign in with the owner's email and password, and go to **Settings >
+Backups**. Pick a backup and choose **Restore**. The app restarts with that data.
+
+**By hand,** from a nightly backup or a copy of your own. For example, for Flowy:
+
+```sh
+cd ~/selfhostit/flowy                  # the app's folder
+docker compose down
+mv pb_data pb_data.old                 # keep the current data until the restore works
+mkdir pb_data
+ls pb_data.old/backups                 # the nightly backups, newest last
+unzip pb_data.old/backups/<one of them>.zip -d pb_data
+cp -r pb_data.old/backups pb_data/     # keep the other backups too
+sudo chown -R 1000:1000 pb_data        # the user the app runs as (not needed for Splitwiz and should-we)
+docker compose up -d
+```
+
+For a copy of your own, put that `pb_data` folder in place instead of unzipping (and
+decrypt it first, for example `age -d ... | tar xzf -`). On a Synology, do the same in File
+Station and restart the project in Container Manager, or restore the folder with Hyper
+Backup.
+
+Then open the app and check that your newest entries are there. Once they are, delete
+`pb_data.old`.
 
 ## Removing an app
 

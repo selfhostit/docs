@@ -75,13 +75,21 @@ For public addresses such as `https://splitwiz.example.com`:
   and use a `Caddyfile` like this:
 
   ```
+  (no-admin) {
+      # keep the admin UI off the internet; open it through Tailscale or on the machine
+      respond /_/* 404
+      respond /api/collections/_superusers/* 404
+  }
   splitwiz.example.com {
+      import no-admin
       reverse_proxy 127.0.0.1:8090
   }
   should-we.example.com {
+      import no-admin
       reverse_proxy 127.0.0.1:8091
   }
   flowy.example.com {
+      import no-admin
       reverse_proxy 127.0.0.1:8092
   }
   ```
@@ -92,6 +100,14 @@ Forward only port 443, and only to the reverse proxy. Never forward an app's own
 to 8095) in your router: that serves the app over plain `http://`, so passwords cross the
 internet unencrypted, and it skips the proxy. Turn off **UPnP** in the router too, so no
 device on your network can open a port by itself.
+
+**Keep the admin UI private.** Each app's admin UI (`/_/`) can see and change all of its
+data, and its only protection is the owner's password and a limit of 10 tries a minute. On a
+public address, block it at the proxy as in the `Caddyfile` above, and open it through
+Tailscale or on the machine itself when you need it (for example
+`ssh -L 8092:127.0.0.1:8092 yourserver`, then `http://localhost:8092/_/`). A proxy that can't
+block a path, such as DSM's, leaves it reachable: then use Tailscale instead, or at least a
+long, unique owner password. See [Can I put the apps on the internet?](security.md#can-i-put-the-apps-on-the-internet)
 
 ## Install the app on the phone
 

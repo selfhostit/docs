@@ -35,10 +35,31 @@ and a published advisory after each fix ([policy](https://github.com/selfhostit/
 | No Docker socket, no privileged mode, no host network for the apps | the compose files (only the optional Tailscale node uses the host network, to reach the apps on `127.0.0.1`) |
 | One-time setup code: the first account (the owner) can only be made with the code printed at install, which is deleted after setup | `backend/app/setup.go` in [plasto](https://github.com/selfhostit/plasto/blob/main/backend/app/setup.go) and each app built on it, and Splitwiz |
 | Sign-in rate limits: 10 password attempts a minute for people and for the admin UI, 5 a minute for setup | `backend/migrations/*_rate_limits.go` in each app |
-| Access rules on every collection: people only see their own records or their group's | the collection API rules in `backend/migrations` |
+| Access rules on every collection: people only see their own records or their group's. In Flowy, others on the same server see only your name and role, not your cycle settings or day logs, and tests check it | the collection API rules in `backend/migrations` |
 | Content Security Policy (`script-src 'self'`), `nosniff`, `frame-ancestors 'none'` and a same-origin referrer, so injected scripts and outside resources don't load | `backend/app/headers.go` in each app |
 | Discreet reminders (Flowy, off by default): notifications only say "Reminder from Flowy", for a lock screen others can see | Flowy settings, `discreet_reminders` |
-| Nightly database backups, the last 7 kept | [Updates and backups](updates-and-backups.md#backups) |
+| Nightly database backups, the last 7 kept, and a guide to restore one | [Updates and backups](updates-and-backups.md#backups) |
+
+## Can I put the apps on the internet?
+
+- **Through Tailscale: yes, and the installer offers to set it up.** The apps stay off the
+  internet; only your own devices, signed in to your Tailscale account, can reach them, over
+  an encrypted connection with an `https://` address.
+- **On a public address, with your own reverse proxy:** you can, but then anyone can reach
+  the sign-in page and try passwords, and you take on keeping that safe. Only do it with
+  HTTPS, with the admin UI (`/_/`) blocked at the proxy, with a long unique password for
+  every account, and with the apps kept updated. [Phones](phones.md#your-own-domain-with-a-reverse-proxy)
+  shows a proxy setup that does this. The apps limit password attempts, but have no
+  two-step sign-in yet.
+- **By forwarding an app's port in your router: no.** That serves the app over plain
+  `http://`, so passwords cross the internet readable.
+
+## What not to keep in the apps yet
+
+The apps are built for household data: periods, food, expenses, plans. Until the database
+is encrypted on disk and there has been an independent review, don't make them the only
+place you keep passwords, bank or card details, identity documents or medical records,
+and keep an encrypted [backup](updates-and-backups.md#backups) of what you do keep.
 
 ## Sign-in, sessions and logs
 
@@ -187,6 +208,7 @@ is MIT licensed so anyone can keep building it, and your data is a SQLite databa
 These are planned, in roughly this order:
 
 - A "sign out everywhere" button in every app (Flowy has it), for a lost phone.
+- Two-step sign-in, for anyone who puts an app on a public address.
 - An OpenSSF Scorecard run on each repository.
 - An independent security review. If you do one, please share what you find through the
   reporting route above; findings and fixes will be published as advisories.
@@ -196,5 +218,7 @@ These are planned, in roughly this order:
 - Keep the apps updated: `selfhostit update all` or the installer again
   ([Updates and backups](updates-and-backups.md)).
 - Keep a backup somewhere else, encrypted.
-- Don't forward ports to the apps; use Tailscale or your own reverse proxy with HTTPS.
+- Don't forward ports to the apps; use Tailscale, or your own reverse proxy with HTTPS and
+  the admin UI (`/_/`) blocked.
+- Restore a backup once, to know it works ([how](updates-and-backups.md#restore-a-backup)).
 - Use a strong password for the owner account; it is also the admin UI (`/_/`) password.
