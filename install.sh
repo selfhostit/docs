@@ -28,7 +28,7 @@ info() {
 	splitwiz) echo "8090|Split shared costs with your partner or roommate" ;;
 	should-we) echo "8091|Pick one option together, as a group" ;;
 	flowy) echo "8092|A private period and cycle tracker" ;;
-	troye) echo "8093|A private calorie and weight tracker (work in progress)" ;;
+	troye) echo "8093|A private calorie and weight tracker" ;;
 	*) return 1 ;;
 	esac
 }
