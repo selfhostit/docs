@@ -60,7 +60,10 @@ Two ways, both described in [phones](phones.md):
   [pkgs.tailscale.com](https://pkgs.tailscale.com/stable/#spks) and install it with
   **Manual Install** in Package Center. If you already have the Package Center one,
   uninstall it first. This package doesn't update itself, so update it now and then, or
-  add a scheduled task that runs `tailscale update --yes` as root.
+  add a scheduled task that runs `tailscale update --yes` as root. If the NAS itself
+  should reach your other Tailscale devices (for example to back up to them), also follow
+  [Enable outbound connections](https://tailscale.com/kb/1131/synology#enable-outbound-connections)
+  and run it again after each update.
 - **On a public address:** DSM's own reverse proxy with a free `*.synology.me` address and
   Let's Encrypt certificate. The [Splitwiz Synology guide](https://github.com/selfhostit/splitwiz/blob/main/docs/synology.md)
   walks through it step by step; repeat the reverse proxy step for each app with its own
