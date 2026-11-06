@@ -53,8 +53,14 @@ In the pasted file, set the port so two apps don't share one (the number after `
 
 Two ways, both described in [phones](phones.md):
 
-- **At home and away, without opening your router:** Tailscale. Install the Tailscale
-  package from Package Center.
+- **At home and away, without opening your router:** Tailscale. Don't use the Tailscale
+  package in Package Center: Tailscale no longer supports it and it lags behind their
+  releases. Follow [Tailscale's Synology guide](https://tailscale.com/kb/1131/synology)
+  instead: download the package for your NAS's architecture from
+  [pkgs.tailscale.com](https://pkgs.tailscale.com/stable/#spks) and install it with
+  **Manual Install** in Package Center. If you already have the Package Center one,
+  uninstall it first. This package doesn't update itself, so update it now and then, or
+  add a scheduled task that runs `tailscale update --yes` as root.
 - **On a public address:** DSM's own reverse proxy with a free `*.synology.me` address and
   Let's Encrypt certificate. The [Splitwiz Synology guide](https://github.com/selfhostit/splitwiz/blob/main/docs/synology.md)
   walks through it step by step; repeat the reverse proxy step for each app with its own
