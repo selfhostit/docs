@@ -18,18 +18,32 @@ another program already has it, the app gets the next free port, and keeps that 
 
 ## Quick start
 
-On a Raspberry Pi, a Linux server or a NAS you can reach over SSH:
+**Install: one line, every app.** You need a little computer that runs Linux, such as an old
+laptop, a mini PC, a Raspberry Pi or a NAS (see [what you need](#what-you-need)), and a
+terminal on it, or SSH. Then:
 
 ```sh
 curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sh
 ```
 
-It installs Docker if it is missing (on Linux), asks which apps you want and where to keep
-them, and starts them. Run it again to update; your settings and data are kept.
+<img src="img/install.svg" width="100%" alt="Three panels: find an old laptop or a Raspberry Pi, paste one line in a terminal and pick your apps, then open every app in a browser at home.">
 
-It can also set up [Tailscale](phones.md#tailscale-recommended), so your phones reach the apps
-over HTTPS, which they need to install an app and get notifications. You only open a link to
-sign in; there are no keys or settings to copy. Then [put the apps on your phones](phones.md).
+The installer sets up Docker if it is missing (on Linux), asks which apps you want and where
+to keep them, and starts them. Run the same line again to update; your settings and data are
+kept. Step by step: [a Pi or Linux](linux.md), a [Synology](synology.md) or
+[another NAS](other-nas.md).
+
+**Optional: on your phones, at home and away.** Phones only install a web app and show its
+notifications over `https://`, and that's the same for every app. The installer can give all
+your apps `https://` addresses with [Tailscale](phones.md#tailscale-recommended), a free
+private network that only your own devices can reach. There is nothing to install on the
+server, because the installer runs Tailscale for you; you sign in once, and each phone gets
+the Tailscale app. Then [put the apps on your phones](phones.md#install-the-app-on-the-phone).
+
+<img src="img/phones.svg" width="100%" alt="Three panels: say yes to Tailscale in the installer and open its sign-in link, install the Tailscale app on each phone with the same account, then open each app's https address and add it to the home screen.">
+
+Already have a domain? Use [a reverse proxy](phones.md#your-own-domain-with-a-reverse-proxy)
+instead of Tailscale.
 
 Prefer to read and check a script before you run it? Download it, verify it, read it, then
 run it:
