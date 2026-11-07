@@ -39,6 +39,7 @@ and a published advisory after each fix ([policy](https://github.com/selfhostit/
 | Content Security Policy (`script-src 'self'`), `nosniff`, `frame-ancestors 'none'` and a same-origin referrer, so injected scripts and outside resources don't load | `backend/app/headers.go` in each app |
 | Discreet reminders (Flowy, off by default): notifications only say "Reminder from Flowy", for a lock screen others can see | Flowy settings, `discreet_reminders` |
 | Nightly database backups, the last 7 kept, and a guide to restore one | [Updates and backups](updates-and-backups.md#backups) |
+| `selfhostit check` shows, for each app on your machine, whether it is open to your network, runs as root, has a writable filesystem or the Docker socket, is out of date, or has no recent backup | [Updates and backups](updates-and-backups.md#check-your-install-selfhostit-check) |
 
 ## Can I put the apps on the internet?
 
@@ -104,8 +105,11 @@ All of this is PocketBase's standard behavior, which the apps keep.
   jobs that publish images or releases get more.
 - Every third-party Action is pinned to a full commit hash, not a movable tag.
 - [Dependabot](https://docs.github.com/code-security/dependabot) keeps the Actions up to date
-  in every repository, and in the apps built on plasto also the Go, npm, Python and Docker
-  dependencies.
+  in every repository, and in every app also the Go, npm and Docker dependencies (and
+  Python, in the apps with workers).
+- [OpenSSF Scorecard](https://scorecard.dev) checks each repository's security practices
+  every week and on every push to `main`; the score is public and shown as a badge in each
+  README.
 - Images are published to [ghcr.io/selfhostit](https://github.com/orgs/selfhostit/packages)
   for amd64, arm64 and armv7. A release (`v1.2.3`, with notes in each app's `CHANGELOG.md`)
   moves the major version tag (`:1`), which installs follow; changes on `main` only go to
@@ -114,6 +118,10 @@ All of this is PocketBase's standard behavior, which the apps keep.
   workflow run, repository and commit built it. Check one with the
   [GitHub CLI](https://cli.github.com):
   `gh attestation verify oci://ghcr.io/selfhostit/flowy:1 --repo selfhostit/flowy`.
+- Every published image also carries a software bill of materials (SBOM, SPDX): the list
+  of every package inside it, so you can check an image against a new vulnerability
+  yourself:
+  `docker buildx imagetools inspect ghcr.io/selfhostit/flowy:1 --format '{{ json .SBOM }}'`.
 
 ## What you are trusting
 
@@ -126,8 +134,9 @@ Being honest about this matters more than sounding safe.
   either is harmless: someone who took over the maintainer's GitHub account could still
   publish a bad release.
 - **Docker and the host.** The containers are locked down, but Docker itself runs as root,
-  and anyone with access to the machine can read `pb_data`. The data on disk is not
-  encrypted, so encrypt backups that leave the machine and wipe the disk before you sell it.
+  and anyone with access to the machine can read `pb_data`. The apps don't encrypt their
+  data on disk, so encrypt the disk itself where you can (see [Your part](#your-part)),
+  encrypt backups that leave the machine, and wipe the disk before you sell it.
 - **Tailscale**, if you use it, to keep your private network private. Turn on two-factor
   sign-in for your Tailscale account and only share the machine with people you trust.
   Its container follows Tailscale's `stable` image.
@@ -210,7 +219,6 @@ These are planned, in roughly this order:
 
 - A "sign out everywhere" button in every app (Flowy has it), for a lost phone.
 - Two-step sign-in, for anyone who puts an app on a public address.
-- An OpenSSF Scorecard run on each repository.
 - An independent security review. If you do one, please share what you find through the
   reporting route above; findings and fixes will be published as advisories.
 
@@ -218,7 +226,13 @@ These are planned, in roughly this order:
 
 - Keep the apps updated: `selfhostit update all` or the installer again
   ([Updates and backups](updates-and-backups.md)).
+- Run `selfhostit check` now and then: it flags an app that is open to your network, out
+  of date, or without a recent backup ([how](updates-and-backups.md#check-your-install-selfhostit-check)).
 - Keep a backup somewhere else, encrypted.
+- Encrypt the disk the apps are on, so a stolen machine or disk doesn't give away their
+  data: on Linux, choose disk encryption (LUKS) when you install it; on a Synology, keep the
+  apps on an encrypted volume or shared folder; on a Raspberry Pi, the SD card can't easily
+  be encrypted, so keep the Pi somewhere safe.
 - Don't forward ports to the apps; use Tailscale, or your own reverse proxy with HTTPS and
   the admin UI (`/_/`) blocked.
 - Restore a backup once, to know it works ([how](updates-and-backups.md#restore-a-backup)).

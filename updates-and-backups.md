@@ -49,6 +49,20 @@ Synology, `~/selfhostit` elsewhere), and works for any folder there with a
 `~/.profile`. It uses `sudo` when your user can't reach Docker directly, and asks for the
 password once. Run the `curl` line again to get a newer version of the command.
 
+### Check your install: `selfhostit check`
+
+```sh
+selfhostit check          # every app
+selfhostit check flowy    # one app
+```
+
+For each running container it says whether it is reachable only from this machine or open
+to your network, runs as a normal user or as root, drops Linux capabilities, can gain new
+privileges, has a read-only filesystem, has the Docker socket, and runs the newest image of
+its tag (it asks ghcr.io, without pulling anything). For each app it also says whether there
+is a nightly backup from the last two days. It changes nothing. Anything to look at is
+marked `WARN`, and then it exits with status 1, so you can run it from a scheduled task.
+
 On a Synology without SSH: Container Manager > Image, select the app's image and choose
 **Update**, then Project > the app > Action > **Build**.
 
@@ -74,8 +88,10 @@ Tailscale key, which lets whoever has it join your tailnet as that machine.
   age -d selfhostit-2026-11-05.tar.gz.age | tar xzf -   # to restore it
   ```
 
-Selling or throwing away the machine or its SD card? Delete the apps' folders and wipe the
-disk first; the data on it is not encrypted.
+The apps don't encrypt their data on disk, so encrypt the disk itself where you can: choose
+disk encryption (LUKS) when you install Linux, or keep the apps on an encrypted volume or
+shared folder on a Synology. Selling or throwing away the machine or its SD card? Delete the
+apps' folders and wipe the disk first.
 
 ## Restore a backup
 
