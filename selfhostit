@@ -5,6 +5,7 @@
 #   selfhostit update splitwiz flowy  several apps in one go
 #   selfhostit update all             every app folder that has a compose file
 #   selfhostit list                   apps found and the image each one runs
+#   selfhostit check [app...]         a security check of every app, or the ones named
 #
 # Each app is a folder holding a docker-compose.yml, in the same parent folder
 # the installer uses: /volume1/docker on a Synology, ~/selfhostit elsewhere.
@@ -22,7 +23,7 @@ DOCKER=$(command -v docker 2>/dev/null || true)
 if [ "$(id -u)" -eq 0 ] || "$DOCKER" info >/dev/null 2>&1; then SUDO=; else SUDO=sudo; fi
 
 usage() {
-  sed -n '3,7s/^# \{0,1\}//p' "$0"
+  sed -n '3,8s/^# \{0,1\}//p' "$0"
   exit "${1:-0}"
 }
 
@@ -87,6 +88,108 @@ update_one() {
   echo
 }
 
+# --- selfhostit check ---------------------------------------------------------
+# Read-only: it inspects the running containers and the backup folder, and asks
+# ghcr.io which image a tag points at now. It changes nothing.
+
+warned=0
+ok() { echo "  ok    $*"; }
+warn() { echo "  WARN  $*"; warned=1; }
+
+# The digest a ghcr.io tag points at now, or nothing if it can't be found out.
+remote_digest() {
+  command -v curl >/dev/null || return 0
+  repo=${1#ghcr.io/}; tag=${repo##*:}; repo=${repo%:*}
+  [ "$tag" != "$repo" ] || tag=latest
+  token=$(curl -fsS "https://ghcr.io/token?scope=repository:$repo:pull" 2>/dev/null |
+    sed -n 's/.*"token":"\([^"]*\)".*/\1/p') || return 0
+  [ -n "$token" ] || return 0
+  curl -fsSI -H "Authorization: Bearer $token" \
+    -H 'Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.v2+json' \
+    "https://ghcr.io/v2/$repo/manifests/$tag" 2>/dev/null |
+    tr -d '\r' | awk -F': ' 'tolower($1) == "docker-content-digest" {print $2}'
+}
+
+check_container() {
+  id=$1
+  f='{{.Name}}|{{.Config.Image}}|{{.Image}}|{{.HostConfig.Privileged}}|{{.HostConfig.ReadonlyRootfs}}|{{.HostConfig.NetworkMode}}|{{.HostConfig.CapDrop}}|{{.HostConfig.SecurityOpt}}'
+  IFS='|' read -r name image image_id privileged readonly netmode capdrop secopt <<EOF
+$($SUDO "$DOCKER" inspect -f "$f" "$id")
+EOF
+  name=${name#/}
+  echo " $name ($image)"
+  case $image in *tailscale*) tailscale=1 ;; *) tailscale= ;; esac
+
+  # Reachable from where?
+  # shellcheck disable=SC2016 # a Go template, not shell
+  ports=$($SUDO "$DOCKER" inspect -f '{{range $p, $b := .HostConfig.PortBindings}}{{range $b}}{{.HostIp}}:{{.HostPort}} {{end}}{{end}}' "$id")
+  ports=${ports% }
+  open=
+  for b in $ports; do
+    case $b in 127.*|\[::1\]:*|::1:*) ;; *) open="$open ${b#:}" ;; esac
+  done
+  if [ "$netmode" = host ]; then
+    if [ -n "$tailscale" ]; then ok "host network (Tailscale needs it to reach the apps)"
+    else warn "uses the host network: reachable on every address of this machine"; fi
+  elif [ -n "$open" ]; then
+    warn "port open to your network, not only this machine:$open (see https://github.com/selfhostit/docs/blob/main/security.md)"
+  elif [ -n "$ports" ]; then ok "only reachable from this machine: $ports"
+  else ok "no ports published"; fi
+
+  # Who it runs as, and what it may do
+  uids=$($SUDO "$DOCKER" top "$id" -o pid,uid 2>/dev/null | awk 'NR > 1 {print $2}' | sort -u | tr '\n' ' ')
+  uids=${uids% }
+  case " $uids " in
+    *" 0 "*) if [ -n "$tailscale" ]; then ok "runs as root (Tailscale needs it)"
+             else warn "a process runs as root inside the container"; fi ;;
+    "  ") echo "  ?     couldn't see which user it runs as" ;;
+    *) ok "runs as a normal user (uid $uids)" ;;
+  esac
+  if [ "$privileged" = true ]; then warn "privileged container: it has full access to this machine"; fi
+  if [ -z "$tailscale" ]; then
+    case $capdrop in *ALL*|*all*) ok "drops all Linux capabilities (cap_drop: [ALL])" ;; *) warn "keeps Docker's default Linux capabilities (no cap_drop: [ALL])" ;; esac
+    case $secopt in *no-new-privileges*) ok "can't gain new privileges" ;; *) warn "can gain new privileges (no no-new-privileges)" ;; esac
+    if [ "$readonly" = true ]; then ok "read-only filesystem"; else warn "writable filesystem (no read_only: true)"; fi
+  fi
+  if $SUDO "$DOCKER" inspect -f '{{range .Mounts}}{{.Source}} {{end}}' "$id" | grep -q 'docker\.sock'; then
+    warn "has the Docker socket: it can control every container on this machine"
+  fi
+
+  # Up to date?
+  case $image in
+    ghcr.io/*)
+      want=$(remote_digest "$image")
+      have=$($SUDO "$DOCKER" image inspect -f '{{range .RepoDigests}}{{.}} {{end}}' "$image_id" 2>/dev/null)
+      if [ -z "$want" ]; then echo "  ?     couldn't ask ghcr.io for the newest $image"
+      else
+        case " $have" in
+          *"@$want "*) ok "runs the newest $image" ;;
+          *) warn "a newer $image is out: selfhostit update ${app}" ;;
+        esac
+      fi ;;
+  esac
+}
+
+check_one() {
+  app=$1
+  dir=$ROOT/$app
+  compose_file "$dir" >/dev/null || { echo "selfhostit: no compose file in $dir" >&2; return 1; }
+  cd "$dir" || return 1
+  echo "== $app"
+  ids=$(dc ps -q 2>/dev/null)
+  if [ -z "$ids" ]; then warn "not running"; echo; return 0; fi
+  for id in $ids; do check_container "$id"; done
+
+  # Backups: PocketBase makes one every night into pb_data/backups
+  if [ -d pb_data ]; then
+    newest=$($SUDO find pb_data/backups -name '*.zip' -mtime -2 2>/dev/null | sort | tail -n 1)
+    if [ -n "$newest" ]; then ok "a backup from the last 2 days: ${newest#pb_data/backups/}"
+    else warn "no backup in pb_data/backups from the last 2 days (https://github.com/selfhostit/docs/blob/main/updates-and-backups.md#backups)"; fi
+    [ -z "$newest" ] || echo "  note  that backup is on this disk; keep an encrypted copy somewhere else too"
+  fi
+  echo
+}
+
 cmd=${1:-}
 [ $# -gt 0 ] && shift
 case $cmd in
@@ -109,6 +212,16 @@ case $cmd in
       imgs=$(cd "$ROOT/$app" && dc config --images 2>/dev/null | tr '\n' ' ')
       printf '%-16s %s\n' "$app" "$imgs"
     done
+    ;;
+  check)
+    # shellcheck disable=SC2046 # app folder names have no spaces
+    [ $# -gt 0 ] || set -- $(apps)
+    [ -z "$SUDO" ] || sudo true
+    for app in "$@"; do
+      ( check_one "$app" && exit "$warned" ) || warned=1
+    done
+    if [ "$warned" = 1 ]; then echo "Some checks need a look: see WARN above."; exit 1; fi
+    echo "All checks passed."
     ;;
   ''|-h|--help|help) usage ;;
   *) echo "selfhostit: unknown command '$cmd'" >&2; usage 2 >&2 ;;
