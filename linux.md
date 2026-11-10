@@ -27,7 +27,8 @@ The installer:
 
 1. Installs Docker with the official script from get.docker.com if it is missing (it
    asks first, and may ask for your password).
-2. Shows the apps and asks which ones you want. Type numbers or names, such as `1 3`.
+2. Shows the apps and asks which ones you want. Type numbers or names, such as `1 3`. Each
+   app runs on its own, so pick only the ones you want and add more later.
 3. Asks for a folder, `~/selfhostit` by default, and puts each app in its own folder there
    with its database.
 4. Asks whether to set up Tailscale, which gives every app an `https://` address that only
@@ -42,7 +43,8 @@ with Tailscale, or `http://localhost:8090` on the machine itself without it. A n
 gets a one-time setup code, listed under its address: its setup screen asks for it when you
 create the first account, so nobody else can set it up. Each app only
 listens on the machine and on your Tailscale network, so nothing is open to the rest of your
-network or the internet. Then [install the apps on your phones](phones.md).
+network or the internet. Then [make your account and add your household](first-steps.md),
+and [install the apps on your phones](phones.md).
 
 ## Without the menu
 

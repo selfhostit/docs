@@ -49,7 +49,10 @@ To sign in without the link, for example on a machine without a browser nearby, 
 
 Flowy, Troye, Shoppa and Calio can also join Tailscale on their own, each with its own name such as
 `https://flowy.your-tailnet.ts.net`, when you install them with their own installer: see
-their `docs/deploy.md`.
+their `docs/deploy.md`. Then each app is a separate Tailscale machine, with no port in its
+address, and you share each one on its own: someone you share Flowy with can't open Calio
+until you share Calio too. This page's installer instead puts every app on the one
+`selfhostit` machine, so one share covers them all. Either works; pick one way per app.
 
 Everyone who uses the apps needs to be on your tailnet. That suits a household; to share a
 should-we decision with friends, use a public address instead.
