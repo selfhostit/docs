@@ -191,12 +191,17 @@ if [ -z "$chosen" ]; then
 		printf '  %d) %-10s %s\n' "$i" "$app" "$(info "$app" | cut -d'|' -f2)"
 	done
 	echo
+	echo "Each app runs on its own, so pick only the ones you want; you can add more later."
 	answer=$(ask "Which apps? Numbers or names, separated by spaces, or all" all)
 	[ "$answer" = all ] && answer=$apps
 	for a in $answer; do
 		case $a in
 		*[!0-9]*) chosen="$chosen $a" ;;
-		*) chosen="$chosen $(echo "$apps" | cut -d' ' -f"$a")" ;;
+		*)
+			app=$(echo "$apps" | tr ' ' '\n' | sed -n "${a}p" 2>/dev/null)
+			[ -n "$app" ] || die "there is no app number $a; choose from 1 to $(echo "$apps" | wc -w)"
+			chosen="$chosen $app"
+			;;
 		esac
 	done
 fi
@@ -222,8 +227,9 @@ if [ -d "$base/tailscale" ] || [ -n "${TS_AUTHKEY:-}" ]; then
 	tailscale=y
 elif interactive; then
 	echo
-	echo "Phones only install the apps and show notifications over https://. Tailscale"
-	echo "(free) gives each app an https:// address that only your own devices can reach."
+	echo "The apps only answer on this machine. To open them from your phones and other"
+	echo "computers, at home and away, Tailscale (free) gives each app an https:// address"
+	echo "that only your own devices can reach. Phones need https:// to install the apps."
 	tailscale=$(ask "Set up Tailscale for the apps? (y/n)" y)
 else
 	tailscale=n
@@ -398,13 +404,18 @@ for app in $chosen; do
 	[ -z "$code" ] || printf '  %-10s setup code: %s\n' "" "$code"
 done
 echo
+say "Next:"
+echo "  1. Open an address. A new app asks for its setup code once, then you make your"
+echo "     account and become its owner."
 if [ -n "$ts_name" ]; then
-	echo "On each phone, install the Tailscale app and sign in with the same account,"
-	echo "then open these addresses and add each app to the home screen:"
-	echo "  https://github.com/selfhostit/docs/blob/main/phones.md#install-the-app-on-the-phone"
-	echo "The apps and their data are in $base."
+	echo "  2. On each phone, install the Tailscale app and sign in with the same account,"
+	echo "     then open the addresses and add each app to the home screen."
 else
-	echo "Next, reach them from your phones over HTTPS:"
-	echo "  https://github.com/selfhostit/docs/blob/main/phones.md"
+	echo "  2. These addresses only open on this machine. To open the apps from your phones"
+	echo "     and other computers, run this installer again and say yes to Tailscale, or"
+	echo "     set up a reverse proxy: https://github.com/selfhostit/docs/blob/main/phones.md"
 fi
-echo "To update, run this installer again with the same apps."
+echo
+echo "Adding your household, and what to do when an app doesn't open:"
+echo "  https://github.com/selfhostit/docs/blob/main/first-steps.md"
+echo "The apps and their data are in $base. To update, run this installer again."

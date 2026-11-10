@@ -18,7 +18,7 @@ another program already has it, the app gets the next free port, and keeps that 
 
 ## Quick start
 
-**Install: one line, every app.** You need a little computer that runs Linux, such as an old
+**1. Install the apps you want.** You need a little computer that runs Linux, such as an old
 laptop, a mini PC, a Raspberry Pi or a NAS (see [what you need](#what-you-need)), and a
 terminal on it, or SSH. Then:
 
@@ -28,15 +28,30 @@ curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.s
 
 <img src="img/install.svg" width="100%" alt="Three panels: find an old laptop or a Raspberry Pi, paste one line in a terminal and pick your apps, then open every app in a browser at home.">
 
-The installer sets up Docker if it is missing (on Linux), asks which apps you want and where
-to keep them, and starts them. Run the same line again to update; your settings and data are
-kept. Step by step: [a Pi or Linux](linux.md), a [Synology](synology.md) or
-[another NAS](other-nas.md).
+The installer sets up Docker if it is missing (on Linux), shows the apps and asks which ones
+you want: one, a few or all of them. Each app runs on its own and needs none of the others,
+so start with the one you came for and add more later the same way. To skip the menu, put
+the app names at the end:
 
-**Optional: on your phones, at home and away.** Phones only install a web app and show its
-notifications over `https://`, and that's the same for every app. The installer can give all
-your apps `https://` addresses with [Tailscale](phones.md#tailscale-recommended), a free
-private network that only your own devices can reach. There is nothing to install on the
+```sh
+curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sh -s -- flowy
+```
+
+It then asks where to keep them and starts them. Run the same line again to update; your
+settings and data are kept. Step by step: [a Pi or Linux](linux.md), a
+[Synology](synology.md) or [another NAS](other-nas.md).
+
+**2. Open an app and make your account.** At the end the installer lists each app's address
+and a one-time setup code. Open the address, type the code and create your account: you
+become the app's owner. [After you install](first-steps.md) says how to add the rest of your
+household, and what to do when something doesn't open.
+
+**3. Open them from your phones and other computers.** The apps only answer on the machine
+they run on, so nothing else on your network or the internet can reach them by accident. To
+use them from your phone or laptop, at home and away, they need an `https://` address, which
+phones also need to install a web app and show its notifications. The installer can give all
+your apps one with [Tailscale](phones.md#tailscale-recommended), a free private network that
+only your own devices can reach: say yes when it asks. There is nothing to install on the
 server, because the installer runs Tailscale for you; you sign in once, and each phone gets
 the Tailscale app. Then [put the apps on your phones](phones.md#install-the-app-on-the-phone).
 
@@ -83,6 +98,8 @@ privately through the app's Security tab on GitHub or to kalfasyan@pm.me
 - [Other NAS and home servers](other-nas.md): QNAP, Unraid, TrueNAS SCALE, Portainer,
   CasaOS and anything else that takes a Compose file.
 - [Use them on your phones](phones.md): Tailscale, or a reverse proxy with your own domain.
+- [After you install](first-steps.md): your first account, adding your household, and what to
+  do when an app doesn't open.
 - [Updates and backups](updates-and-backups.md)
 - [Security and privacy](security.md): how your data is protected, and how to report a problem.
 
