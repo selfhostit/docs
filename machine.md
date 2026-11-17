@@ -1,8 +1,8 @@
 # Which machine?
 
 The apps need one machine that stays on, day and night, so your phones can reach them
-whenever you open an app. It doesn't need to be fast: each app uses about 128 to 512 MB of
-memory. Here are four good choices.
+whenever you open an app: a [home server](words.md#home-server). It doesn't need to be
+fast: each app uses about 128 to 512 MB of memory. Here are four good choices.
 
 ## A NAS you already have
 

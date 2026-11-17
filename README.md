@@ -1,8 +1,8 @@
 # Install selfhostit apps
 
-selfhostit apps are small apps you run on your own hardware: a Raspberry Pi, a NAS or a
+selfhostit apps are small apps you run on your own hardware: a [Raspberry Pi](words.md#raspberry-pi), a [NAS](words.md#nas) or a
 cheap server. Each one is a single container with its data in one folder, and they all
-install the same way, with Docker.
+install the same way, with [Docker](words.md#docker).
 
 | App | What it does |
 |---|---|
@@ -18,9 +18,9 @@ install the same way, with Docker.
 - **About 30 minutes.**
 - **A machine that stays on,** such as a Raspberry Pi, a mini PC, an old laptop or a NAS.
   Not sure which? See [which machine?](machine.md)
-- **A computer with a terminal** to type the install line, on that machine or connected to
+- **A computer with a [terminal](words.md#terminal)** to type the install line, on that machine or connected to
   it: [open a terminal and connect](terminal.md).
-- **An account to sign in to Tailscale with** (Google, Microsoft, Apple or GitHub), if you
+- **An account to sign in to [Tailscale](words.md#tailscale) with** (Google, Microsoft, Apple or GitHub), if you
   want the apps on your phones.
 - **The phones of everyone who will use the apps.** Each one gets the free Tailscale app:
   [what that means for a phone](phones.md#tailscale-is-a-vpn-but-not-that-kind).
@@ -31,9 +31,9 @@ running the installer again picks up where you left off. You can also
 
 ## Quick start
 
-**1. Install the apps you want.** You need a little computer that runs Linux, such as an old
+**1. Install the apps you want.** You need a little computer that runs [Linux](words.md#linux), such as an old
 laptop, a mini PC, a Raspberry Pi or a NAS (see [what you need](#what-you-need)), and a
-terminal on it, or SSH ([how to open one and connect](terminal.md)). Then:
+terminal on it, or [SSH](words.md#ssh) ([how to open one and connect](terminal.md)). Then:
 
 ```sh
 curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sh
@@ -55,24 +55,24 @@ settings and data are kept. Step by step: [a Pi or Linux](linux.md), a
 [Synology](synology.md) or [another NAS](other-nas.md).
 
 **2. Open an app and make your account.** At the end the installer lists each app's address
-and a one-time setup code. Open the address, type the code and create your account: you
-become the app's owner. [After you install](first-steps.md) says how to add the rest of your
+and a one-time [setup code](words.md#setup-code). Open the address, type the code and create your account: you
+become the app's [owner](words.md#owner-and-member). [After you install](first-steps.md) says how to add the rest of your
 household, and what to do when something doesn't open.
 
 **3. Open them from your phones and other computers.** The apps only answer on the machine
 they run on, so nothing else on your network or the internet can reach them by accident. To
-use them from your phone or laptop, at home and away, they need an `https://` address, which
-phones also need to install a web app and show its notifications. The installer can give all
+use them from your phone or laptop, at home and away, they need an [`https://`](words.md#https) address, which
+phones also need to install a [web app](words.md#web-app) and show its notifications. The installer can give all
 your apps one with [Tailscale](phones.md#tailscale-recommended), a free private network that
 only your own devices can reach: say yes when it asks. There is nothing to install on the
 server, because the installer runs Tailscale for you; you sign in once, and each phone gets
 the Tailscale app. Then [put the apps on your phones](phones.md#install-the-app-on-the-phone).
-Tailscale is a VPN, but not the kind that changes how your phone browses:
+Tailscale is a [VPN](words.md#vpn), but not the kind that changes how your phone browses:
 [here is what it does on a phone](phones.md#tailscale-is-a-vpn-but-not-that-kind).
 
 <img src="img/phones.svg" width="100%" alt="Three panels: say yes to Tailscale in the installer and open its sign-in link, install the Tailscale app on each phone with the same account, then open each app's https address and add it to the home screen.">
 
-Already have a domain? Use [a reverse proxy](phones.md#your-own-domain-with-a-reverse-proxy)
+Already have a [domain](words.md#domain)? Use [a reverse proxy](phones.md#your-own-domain-with-a-reverse-proxy)
 instead of Tailscale.
 
 Prefer to read and check a script before you run it? Download it, verify it, read it, then
@@ -95,7 +95,7 @@ and what you are trusting.
 
 The apps keep their data on your machine, in one folder each, with no selfhostit cloud and no
 analytics. They listen on `127.0.0.1` only and are reached through Tailscale or your own
-reverse proxy, never a forwarded port. Containers run as a normal user with no Linux
+reverse proxy, never a [forwarded port](words.md#port-forwarding). Containers run as a normal user with no Linux
 capabilities and a read-only filesystem, a new install asks for a one-time setup code,
 passwords are stored as bcrypt hashes, sign-ins are rate limited and the web apps send a
 Content Security Policy. Every change, and every week, is scanned with CodeQL, govulncheck,
@@ -112,10 +112,10 @@ privately through the app's Security tab on GitHub or to kalfasyan@pm.me
   rented server.
 - [Open a terminal and connect](terminal.md): on Windows, Mac, Linux or a Chromebook.
 - [Words you'll meet](words.md): SSH, Docker, Tailscale and the other words in these guides.
-- [Raspberry Pi and Linux](linux.md): a Pi, a mini PC, an old laptop or a VPS.
+- [Raspberry Pi and Linux](linux.md): a Pi, a mini PC, an old laptop or a [VPS](words.md#vps).
 - [Synology NAS](synology.md): with Container Manager, from the DSM web interface.
 - [Other NAS and home servers](other-nas.md): QNAP, Unraid, TrueNAS SCALE, Portainer,
-  CasaOS and anything else that takes a Compose file.
+  CasaOS and anything else that takes a [Compose file](words.md#compose-file).
 - [Use them on your phones](phones.md): Tailscale, or a reverse proxy with your own domain.
 - [After you install](first-steps.md): your first account, adding your household, and what to
   do when an app doesn't open.
