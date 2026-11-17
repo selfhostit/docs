@@ -60,7 +60,7 @@ curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.s
 ## Good to know
 
 - **[Ports](words.md#port):** Splitwiz 8090, should-we 8091, Flowy 8092, Troye 8093, Shoppa 8094,
-  Calio 8095. If another program already has one of these when an app is first installed,
+  Calio 8095, Reckon 8096. If another program already has one of these when an app is first installed,
   that app gets the next free port instead, and the list at the end shows it. An app keeps its port from then on. To
   change one, edit the port in that app's `.env` and run the installer again.
 - **Restarts:** the apps start again by themselves when the machine reboots.

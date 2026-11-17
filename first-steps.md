@@ -38,9 +38,9 @@ Nobody can sign themselves up, so the owner adds everyone else:
 |---|---|
 | Splitwiz | The setup screen asks for both people at once. That's all. |
 | should-we | No accounts. Start a decision, tap **Share** and send the link. |
-| Flowy, Troye, Shoppa, Calio | Open the admin page, the app's address with `/_/` at the end, and sign in as the owner. Then **users** > **New record**: their email, a password and the role `member`. Send them the address and the password. |
+| Flowy, Troye, Shoppa, Calio, Reckon | Open the admin page, the app's address with `/_/` at the end, and sign in as the owner. Then **users** > **New record**: their email, a password and the role `member`. Send them the address and the password. |
 
-Each person only sees their own data in Flowy and Troye. In Shoppa and Calio the household
+Each person only sees their own data in Flowy, Troye and Reckon. In Shoppa and Calio the household
 shares one list and one calendar.
 
 ## 3. Put it on your phones
