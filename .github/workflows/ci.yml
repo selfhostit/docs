@@ -15,8 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - run: shellcheck -s sh install.sh selfhostit scripts/pin-apps.sh scripts/release-apps.sh
-      - run: sh -n install.sh && sh -n selfhostit && sh -n scripts/pin-apps.sh && sh -n scripts/release-apps.sh
+      - run: shellcheck -s sh install.sh selfhostit scripts/pin-apps.sh scripts/release-apps.sh scripts/test-selfhostit.sh
+      - run: sh -n install.sh && sh -n selfhostit && sh -n scripts/pin-apps.sh && sh -n scripts/release-apps.sh && sh -n scripts/test-selfhostit.sh
+      # selfhostit info, list and remove against a made-up apps folder and a stub docker
+      - run: scripts/test-selfhostit.sh
 
   # Every file install.sh downloads must still have the SHA-256 it pins.
   pins:
