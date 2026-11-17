@@ -96,11 +96,11 @@ pins() {
 	calio v0.1.6 deploy/tailscale-serve.json e8340fb636e47ddd1c3bd6709d39303d32ab9aa2eecb9e9ca35ac3b82af102c9
 	calio v0.1.6 deploy/tailscale-feed-serve.json 64d154aae85ca2e9fe9a462446d9643459313adbabcc754b807ab1a1a4f2d7b2
 	calio v0.1.6 deploy/.env.example 1cf7b922f98d60ce8720b6d9801b9c96f07f942ebc026d7ca2c061289d9ad398
-	reckon v0.1.0 deploy/install.sh 09f2ffaff5556b05d992883ab4705490a265ede21c2ce548c586a350986c06ac
-	reckon v0.1.0 deploy/docker-compose.yml 19e086efc207d0f92344a4a97671a9ef4173867466c4b180cd3b9ee4fd990734
-	reckon v0.1.0 deploy/docker-compose.tailscale.yml 0e9f875b82f7bb5a11f575c6a579bca7d5bedd340fefdab9addc6854ca191517
-	reckon v0.1.0 deploy/tailscale-serve.json e8340fb636e47ddd1c3bd6709d39303d32ab9aa2eecb9e9ca35ac3b82af102c9
-	reckon v0.1.0 deploy/.env.example fe4d41bfaeea04bc4f2f9f377abc4af78672f5ae73020ea28b8150841038a514
+	reckon v0.1.1 deploy/install.sh 09f2ffaff5556b05d992883ab4705490a265ede21c2ce548c586a350986c06ac
+	reckon v0.1.1 deploy/docker-compose.yml 19e086efc207d0f92344a4a97671a9ef4173867466c4b180cd3b9ee4fd990734
+	reckon v0.1.1 deploy/docker-compose.tailscale.yml 0e9f875b82f7bb5a11f575c6a579bca7d5bedd340fefdab9addc6854ca191517
+	reckon v0.1.1 deploy/tailscale-serve.json e8340fb636e47ddd1c3bd6709d39303d32ab9aa2eecb9e9ca35ac3b82af102c9
+	reckon v0.1.1 deploy/.env.example fe4d41bfaeea04bc4f2f9f377abc4af78672f5ae73020ea28b8150841038a514
 	# pins end
 	EOF
 }
