@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'en' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{%- if page.url == "/" %}
+<title>{{ site.title }}: install apps on your own machine</title>
+{%- else %}
+<title>{{ page.title | default: site.title }} · {{ site.title }}</title>
+{%- endif %}
+<meta name="description" content="{{ page.description | default: site.description }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+<meta property="og:title" content="{{ page.title | default: site.title }}">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:description" content="{{ site.description }}">
+<link rel="stylesheet" href="{{ '/assets/docs.css' | relative_url }}">
+</head>
+<body>
+
+<a class="skip" href="#content">Skip to the page</a>
+
+<header class="top">
+  <div class="wrap top-row">
+    <a class="logo" href="https://selfhostit.org">selfhostit</a>
+    <a class="docs-home" href="{{ '/' | relative_url }}">Install guide</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="pages" hidden>Pages</button>
+  </div>
+</header>
+
+{%- assign pages_nav = "/|Start,/machine.html|Which machine,/terminal.html|Terminal,/phones.html|Phones,/first-steps.html|After you install,/updates-and-backups.html|Updates and backups,/words.html|Words" | split: "," %}
+<div class="wrap layout">
+  <nav id="pages" class="pages" aria-label="Guide pages">
+    <ul>
+    {%- for item in pages_nav %}
+      {%- assign parts = item | split: "|" %}
+      <li><a href="{{ parts[0] | relative_url }}"{% if page.url == parts[0] %} aria-current="page"{% endif %}>{{ parts[1] }}</a></li>
+    {%- endfor %}
+    </ul>
+  </nav>
+
+  <main id="content" class="content">
+{{ content }}
+  </main>
+</div>
+
+<footer class="wrap foot">
+  <span>selfhostit by Yannis Kalfas · open source, MIT licensed</span>
+  <span><a href="https://selfhostit.org/contact.html">Contact</a> · <a href="https://github.com/selfhostit/docs">Edit these docs on GitHub</a></span>
+</footer>
+
+<script>
+(() => {
+  // Small screens: the page list folds behind a "Pages" button. Without JS it stays open.
+  const btn = document.querySelector('.menu-btn')
+  const nav = document.getElementById('pages')
+  btn.hidden = false
+  document.documentElement.classList.add('js')
+  btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') !== 'true'
+    btn.setAttribute('aria-expanded', String(open))
+    nav.classList.toggle('open', open)
+  })
+
+  // A Copy button on every code block, because newcomers paste these commands.
+  for (const pre of document.querySelectorAll('.content pre')) {
+    const box = pre.closest('div.highlighter-rouge') || pre
+    const b = document.createElement('button')
+    b.type = 'button'
+    b.className = 'copy'
+    b.textContent = 'Copy'
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText.replace(/\n$/, ''))
+        b.textContent = 'Copied'
+      } catch {
+        b.textContent = 'Select and copy'
+      }
+      setTimeout(() => (b.textContent = 'Copy'), 1500)
+    })
+    box.classList.add('has-copy')
+    box.appendChild(b)
+  }
+
+  // Glossary hints: a link to words.html#term shows that term's first paragraph.
+  if (/\/words(\.html)?$/.test(location.pathname)) return
+  const isWord = (a) => {
+    const u = new URL(a.href, location.href)
+    return u.origin === location.origin && u.hash.length > 1 && /\/words(\.html|\.md)?$/.test(u.pathname)
+  }
+  const links = [...document.querySelectorAll('.content a[href*="words"]')].filter(isWord)
+  if (!links.length) return
+
+  let words = null
+  const load = (url) => (words ||= fetch(url).then((r) => (r.ok ? r.text() : Promise.reject())).then(
+    (html) => new DOMParser().parseFromString(html, 'text/html')
+  ).catch(() => { words = null; return null }))
+
+  const hint = (doc, id) => {
+    let el = doc && doc.getElementById(id)
+    if (!el) return null
+    if (!/^H[1-6]$/.test(el.tagName)) el = el.closest('h1,h2,h3,h4,h5,h6') || el
+    const title = el.textContent.trim()
+    for (let n = el.nextElementSibling; n && !/^H[1-6]$/.test(n.tagName); n = n.nextElementSibling) {
+      if (n.tagName === 'P') return { title, text: n.textContent.trim() }
+    }
+    return null
+  }
+
+  const pop = document.createElement('div')
+  pop.className = 'hint'
+  pop.id = 'word-hint'
+  pop.setAttribute('role', 'tooltip')
+  pop.hidden = true
+  document.body.appendChild(pop)
+  let current = null
+  let hideTimer = 0
+
+  const place = (a) => {
+    const r = a.getBoundingClientRect()
+    const w = Math.min(320, document.documentElement.clientWidth - 32)
+    pop.style.width = w + 'px'
+    let left = r.left + window.scrollX
+    left = Math.max(16, Math.min(left, window.scrollX + document.documentElement.clientWidth - w - 16))
+    pop.style.left = left + 'px'
+    const below = r.bottom + window.scrollY + 8
+    pop.style.top = below + 'px'
+    const h = pop.offsetHeight
+    if (r.bottom + h + 16 > window.innerHeight && r.top > h + 16) {
+      pop.style.top = (r.top + window.scrollY - h - 8) + 'px'
+    }
+  }
+
+  const show = async (a) => {
+    clearTimeout(hideTimer)
+    if (current === a && !pop.hidden) return
+    current = a
+    const u = new URL(a.href, location.href)
+    const doc = await load(u.href.split('#')[0])
+    if (current !== a) return
+    const h = hint(doc, decodeURIComponent(u.hash.slice(1)))
+    if (!h) return
+    pop.replaceChildren()
+    const t = document.createElement('strong')
+    t.textContent = h.title
+    const p = document.createElement('p')
+    p.textContent = h.text
+    const more = document.createElement('a')
+    more.href = a.href
+    more.textContent = 'More in Words you\'ll meet'
+    pop.append(t, p, more)
+    pop.hidden = false
+    a.setAttribute('aria-describedby', pop.id)
+    place(a)
+  }
+
+  const hide = () => {
+    armed = null
+    pop.hidden = true
+    if (current) current.removeAttribute('aria-describedby')
+    current = null
+  }
+  const hideSoon = () => { clearTimeout(hideTimer); hideTimer = setTimeout(hide, 200) }
+
+  const touch = () => matchMedia('(hover: none)').matches
+  let armed = null
+  let quiet = false
+  for (const a of links) {
+    a.classList.add('word')
+    a.addEventListener('mouseenter', () => { if (!touch()) show(a) })
+    a.addEventListener('mouseleave', () => { if (!touch()) hideSoon() })
+    a.addEventListener('focus', () => { if (!quiet && !touch()) show(a) })
+    a.addEventListener('blur', () => setTimeout(() => { if (!pop.contains(document.activeElement)) hideSoon() }, 0))
+    // On touch screens the first tap shows the hint; a second tap follows the link.
+    a.addEventListener('click', (e) => {
+      if (touch() && armed !== a) {
+        e.preventDefault()
+        armed = a
+        show(a)
+      }
+    })
+  }
+  pop.addEventListener('mouseenter', () => clearTimeout(hideTimer))
+  pop.addEventListener('mouseleave', hideSoon)
+  pop.addEventListener('focusout', (e) => { if (!pop.contains(e.relatedTarget) && e.relatedTarget !== current) hideSoon() })
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || pop.hidden) return
+    const a = current
+    hide()
+    if (a && pop.contains(document.activeElement)) { quiet = true; a.focus({ preventScroll: true }); quiet = false }
+  })
+  document.addEventListener('pointerdown', (e) => {
+    if (!pop.hidden && !pop.contains(e.target) && !(current && current.contains(e.target))) hide()
+  })
+  window.addEventListener('resize', () => { if (current && !pop.hidden) place(current) })
+})()
+</script>
+</body>
+</html>
