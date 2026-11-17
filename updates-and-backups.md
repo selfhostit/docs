@@ -19,7 +19,7 @@ docker compose pull && docker compose up -d
 
 ### One command: `selfhostit update`
 
-To update apps over SSH without the installer, install the `selfhostit` command once:
+To update apps over [SSH](words.md#ssh) without the installer, install the `selfhostit` command once:
 
 ```sh
 mkdir -p ~/bin
@@ -39,15 +39,23 @@ selfhostit update splitwiz        # one app
 selfhostit update splitwiz flowy  # several
 selfhostit update all             # every app
 selfhostit list                   # the apps it finds and the image each one runs
+selfhostit info                   # every app's folder, addresses and setup code
+selfhostit info flowy             # the same for one app
+selfhostit remove flowy           # stop and remove an app, keeping its data
 ```
 
-For each app it shows the image its compose file points at, pulls it, and says whether the
+For each app it shows the image its [compose file](words.md#compose-file) points at, pulls it, and says whether the
 container was already up to date, recreated with a new image, or recreated because its
 settings changed. It finds apps in the folder the installer uses (`/volume1/docker` on a
 Synology, `~/selfhostit` elsewhere), and works for any folder there with a
 `docker-compose.yml`. Keep them somewhere else? Add `export SELFHOSTIT_DIR=/path/to/apps` to
-`~/.profile`. It uses `sudo` when your user can't reach Docker directly, and asks for the
+`~/.profile`. It uses `sudo` when your user can't reach [Docker](words.md#docker) directly, and asks for the
 password once. Run the `curl` line again to get a newer version of the command.
+
+`selfhostit info` shows, for each app, its folder, its address on the machine
+([`http://localhost:8092`](words.md#localhost) for Flowy), its [Tailscale](words.md#tailscale) address if the installer set one up, and
+its [setup code](words.md#setup-code) while nobody has made the first account yet. `selfhostit remove` is in
+[remove an app](#remove-an-app) below.
 
 ### Check your install: `selfhostit check`
 
@@ -60,7 +68,7 @@ For each running container it says whether it is reachable only from this machin
 to your network, runs as a normal user or as root, drops Linux capabilities, can gain new
 privileges, has a read-only filesystem, has the Docker socket, and runs the newest image of
 its tag (it asks ghcr.io, without pulling anything). For each app it also says whether there
-is a nightly backup from the last two days. It changes nothing. Anything to look at is
+is a nightly [backup](words.md#backup) from the last two days. It changes nothing. Anything to look at is
 marked `WARN`, and then it exits with status 1, so you can run it from a scheduled task.
 
 On a Synology without SSH: Container Manager > Image, select the app's image and choose
@@ -76,9 +84,9 @@ Tailscale key, which lets whoever has it join your tailnet as that machine.
 
 - **Synology:** add the apps' `pb_data` folders to a **Hyper Backup** task with
   **client-side encryption** turned on.
-- **Other NAS:** include the apps' `pb_data` folders in its backup or snapshot schedule,
+- **Other [NAS](words.md#nas):** include the apps' `pb_data` folders in its backup or snapshot schedule,
   encrypted if it goes off the NAS.
-- **Linux or a Pi:** copy the `pb_data` folders to another disk or computer from time to
+- **[Linux](words.md#linux) or a Pi:** copy the `pb_data` folders to another disk or computer from time to
   time, for example with `rsync -a --exclude tailscale ~/selfhostit/ otherhost:backups/selfhostit/`,
   to an encrypted disk. Or make one encrypted file with [age](https://age-encryption.org),
   which asks for a passphrase:
@@ -97,8 +105,8 @@ apps' folders and wipe the disk first.
 
 Try this once now, while nothing is wrong, so you know your backups work.
 
-**From a nightly backup, in the admin UI:** open the app's `/_/` (through Tailscale or on
-the machine itself), sign in with the owner's email and password, and go to **Settings >
+**From a nightly backup, in the admin UI:** open the app's [admin page](words.md#admin-page), `/_/` (through Tailscale or on
+the machine itself), sign in with the [owner](words.md#owner-and-member)'s email and password, and go to **Settings >
 Backups**. Pick a backup and choose **Restore**. The app restarts with that data.
 
 **By hand,** from a nightly backup or a copy of your own. For example, for Flowy:
@@ -123,6 +131,65 @@ Backup.
 Then open the app and check that your newest entries are there. Once they are, delete
 `pb_data.old`.
 
-## Removing an app
+## Remove an app
 
-In its folder, `docker compose down`, then delete the folder. That deletes its data too.
+**With the `selfhostit` command** ([install it](#one-command-selfhostit-update)):
+
+```sh
+selfhostit remove flowy
+```
+
+It asks you to confirm, stops and removes the app's containers, turns off its Tailscale
+address, and keeps its data folder, telling you where it is. To delete the data too, add
+`--delete-data`: it then asks you to type the app's name before it deletes the folder.
+
+**By hand,** for example for Flowy:
+
+1. Stop and remove its containers:
+
+   ```sh
+   cd ~/selfhostit/flowy && docker compose down
+   ```
+
+2. Turn off its Tailscale address, if the installer set one up. The installer serves each
+   app on its own [port](words.md#port) through the `selfhostit-tailscale` container; give the app's port
+   (8092 for Flowy, or the one in its `.env`):
+
+   ```sh
+   docker exec selfhostit-tailscale tailscale --socket=/tmp/tailscaled.sock serve --https=8092 off
+   ```
+
+3. The data stays in the app's folder until you delete it. Want to keep a copy? Make a
+   [backup](#backups) first. Then:
+
+   ```sh
+   sudo rm -rf ~/selfhostit/flowy
+   ```
+
+Put `sudo` in front of `docker` if your user can't use Docker. To install the app again
+later, run the installer and pick it: an app whose folder you kept comes back with its data.
+
+**On a Synology without SSH:** Container Manager > **Project**, select the app, then
+Action > **Stop** and Action > **Delete**. Then delete its folder in `docker` with File
+Station if you don't want the data.
+
+### Remove everything
+
+1. Remove every app as above, with `selfhostit remove` or by hand.
+2. Stop the Tailscale container and delete the apps' folder, which also holds the
+   machine's Tailscale key:
+
+   ```sh
+   cd ~/selfhostit/tailscale && docker compose down
+   sudo rm -rf ~/selfhostit
+   ```
+
+   On a Synology, the folder is the `docker` shared folder: delete only the apps' folders
+   and `tailscale` in it, in File Station, since other containers may keep data there too.
+
+3. On Tailscale's [machines page](https://login.tailscale.com/admin/machines), find
+   `selfhostit` and choose **Remove**.
+4. If you installed the `selfhostit` command, delete it: `rm ~/bin/selfhostit`.
+
+Docker stays on the machine. Other programs may use it, so remove it only if you know
+nothing else does.

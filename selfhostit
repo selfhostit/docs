@@ -1,11 +1,14 @@
 #!/bin/sh
-# Updates self-hosted Docker Compose apps on a NAS with one command.
+# Updates and looks after self-hosted Docker Compose apps on a NAS, one command each.
 #
 #   selfhostit update splitwiz        pull the newest image and recreate if needed
 #   selfhostit update splitwiz flowy  several apps in one go
 #   selfhostit update all             every app folder that has a compose file
 #   selfhostit list                   apps found and the image each one runs
 #   selfhostit check [app...]         a security check of every app, or the ones named
+#   selfhostit info [app...]          each app's folder, addresses and setup code
+#   selfhostit remove <app>           stop an app and take it off Tailscale; keeps its data
+#   selfhostit remove <app> --delete-data   the same, then delete its folder and data
 #
 # Each app is a folder holding a docker-compose.yml, in the same parent folder
 # the installer uses: /volume1/docker on a Synology, ~/selfhostit elsewhere.
@@ -23,7 +26,7 @@ DOCKER=$(command -v docker 2>/dev/null || true)
 if [ "$(id -u)" -eq 0 ] || "$DOCKER" info >/dev/null 2>&1; then SUDO=; else SUDO=sudo; fi
 
 usage() {
-  sed -n '3,8s/^# \{0,1\}//p' "$0"
+  sed -n '3,11s/^# \{0,1\}//p' "$0"
   exit "${1:-0}"
 }
 
@@ -34,11 +37,25 @@ compose_file() {
   return 1
 }
 
+# The app folders. The shared Tailscale node's folder is not an app.
 apps() {
   for d in "$ROOT"/*/; do
     d=${d%/}
+    [ "${d##*/}" != tailscale ] || continue
     compose_file "$d" >/dev/null && basename "$d"
   done
+}
+
+# is_app NAME: true when NAME is one of the app folders
+is_app() {
+  case $1 in ''|*/*|.|..|tailscale) return 1 ;; esac
+  apps | grep -qxF -- "$1"
+}
+
+no_such_app() {
+  echo "selfhostit: there is no app named '$1' in $ROOT" >&2
+  echo "Apps found: $(apps | tr '\n' ' ')" >&2
+  exit 1
 }
 
 dc() { $SUDO "$DOCKER" compose "$@"; }
@@ -190,6 +207,131 @@ check_one() {
   echo
 }
 
+# --- selfhostit info and remove -----------------------------------------------
+
+# env_port DIR: the port in the app's .env (PORT, SPLITWIZ_PORT or SHOULD_WE_PORT,
+# the names install.sh uses), or nothing
+env_port() {
+  [ -f "$1/.env" ] || return 0
+  { cat "$1/.env" 2>/dev/null || $SUDO cat "$1/.env"; } |
+    grep -E '^(PORT|SPLITWIZ_PORT|SHOULD_WE_PORT)=' | head -n 1 |
+    cut -d= -f2- | tr -d "\"' \r"
+}
+
+# published_port: the first host port the app's running containers publish
+# (run in the app's folder)
+published_port() {
+  for id in $(dc ps -q 2>/dev/null); do
+    # shellcheck disable=SC2016 # a Go template, not shell
+    $SUDO "$DOCKER" inspect -f '{{range $p, $b := .NetworkSettings.Ports}}{{range $b}}{{.HostPort}} {{end}}{{end}}' "$id" 2>/dev/null
+  done | tr ' ' '\n' | grep -E '^[0-9]+$' | head -n 1
+}
+
+# The shared Tailscale node install.sh sets up, in $ROOT/tailscale
+ts() { $SUDO "$DOCKER" exec selfhostit-tailscale tailscale --socket=/tmp/tailscaled.sock "$@"; }
+ts_running() {
+  [ "$($SUDO "$DOCKER" inspect -f '{{.State.Running}}' selfhostit-tailscale 2>/dev/null)" = true ]
+}
+# dns_name: the node's name from `tailscale status --json` on stdin, without the last dot
+dns_name() {
+  sed -n 's/^ *"DNSName": *"\([^"]*\)".*/\1/p' | head -n 1 | sed 's/\.$//'
+}
+# ts_serves PORT: true when the shared node serves PORT
+ts_serves() { ts serve status --json 2>/dev/null | grep -q "\"$1\""; }
+
+info_one() {
+  app=$1
+  dir=$ROOT/$app
+  cd "$dir" || return 1
+  port=$(env_port "$dir")
+  running=$(dc ps -q 2>/dev/null || true)
+  [ -n "$port" ] || [ -z "$running" ] || port=$(published_port)
+
+  echo "$app"
+  printf '  %-19s %s\n' "folder:" "$dir"
+  if [ -z "$running" ]; then
+    printf '  %-19s %s\n' "on this machine:" "not running (start it with: selfhostit update $app)"
+  elif [ -n "$port" ]; then
+    printf '  %-19s %s\n' "on this machine:" "http://localhost:$port"
+  else
+    printf '  %-19s %s\n' "on this machine:" "running, but its port is not known"
+  fi
+  if [ -n "$ts_name" ] && [ -n "$port" ] && ts_serves "$port"; then
+    printf '  %-19s %s\n' "from your devices:" "https://$ts_name:$port"
+  fi
+  # an app installed with its own Tailscale sidecar has its own name
+  side=$(dc ps -q tailscale 2>/dev/null | head -n 1)
+  if [ -n "$side" ]; then
+    name=$($SUDO "$DOCKER" exec "$side" tailscale --socket=/tmp/tailscaled.sock status --json --peers=false 2>/dev/null | dns_name)
+    [ -z "$name" ] || printf '  %-19s %s\n' "from your devices:" "https://$name"
+  fi
+  # there until the first account is made
+  code=$($SUDO cat "$dir/pb_data/setup_code" 2>/dev/null || true)
+  [ -z "$code" ] || printf '  %-19s %s\n' "setup code:" "$code"
+  echo
+}
+
+# true when there is a terminal to ask questions on
+interactive() { (: </dev/tty) 2>/dev/null; }
+
+remove_app() {
+  app='' delete='' yes=''
+  for a in "$@"; do
+    case $a in
+      --delete-data) delete=1 ;;
+      -y|--yes) yes=1 ;;
+      -*) echo "selfhostit: unknown option '$a'" >&2; exit 2 ;;
+      *) [ -z "$app" ] || { echo "selfhostit: remove takes one app at a time" >&2; exit 2; }
+         app=$a ;;
+    esac
+  done
+  [ -n "$app" ] || { echo "usage: selfhostit remove <app> [--delete-data] [--yes]" >&2; exit 2; }
+  case $app in
+    tailscale) echo "selfhostit: tailscale is the shared Tailscale node, not an app" >&2; exit 1 ;;
+    */*|.|..) echo "selfhostit: '$app' is not an app name" >&2; exit 1 ;;
+  esac
+  is_app "$app" || no_such_app "$app"
+  dir=$ROOT/$app
+  case $dir in "$ROOT"/?*) ;; *) echo "selfhostit: refusing to touch $dir" >&2; exit 1 ;; esac
+
+  if [ -z "$yes" ]; then
+    interactive || { echo "selfhostit: no terminal to ask on; add --yes to remove $app anyway" >&2; exit 1; }
+    if [ -n "$delete" ]; then
+      printf 'Remove %s and delete all its data in %s? This cannot be undone.\nType the app name to confirm: ' "$app" "$dir" >/dev/tty
+      read -r answer </dev/tty || answer=
+      [ "$answer" = "$app" ] || { echo "Nothing removed."; exit 1; }
+    else
+      printf 'Remove %s? Its data stays in %s. (y/n) [n]: ' "$app" "$dir" >/dev/tty
+      read -r answer </dev/tty || answer=
+      case $answer in y|Y|yes|YES|Yes) ;; *) echo "Nothing removed."; exit 1 ;; esac
+    fi
+  fi
+  [ -z "$SUDO" ] || sudo true
+
+  port=$(env_port "$dir")
+  cd "$dir"
+  [ -n "$port" ] || port=$(published_port)
+  echo "Stopping $app"
+  dc down --remove-orphans || { echo "selfhostit: could not stop $app; nothing deleted" >&2; exit 1; }
+
+  # the inverse of install.sh's `tailscale serve --bg --https=PORT http://127.0.0.1:PORT`
+  if [ -n "$port" ] && ts_running && ts_serves "$port"; then
+    echo "Taking port $port off Tailscale"
+    ts serve --https="$port" off >/dev/null || echo "selfhostit: could not turn off port $port on Tailscale" >&2
+  fi
+  cd "$ROOT"
+
+  if [ -n "$delete" ]; then
+    echo "Deleting $dir"
+    $SUDO rm -rf -- "$dir"
+    echo "$app is removed, with its data."
+  else
+    echo "$app is stopped and removed. Its data is still in $dir."
+    echo "To start it again: selfhostit update $app"
+    echo "To delete its data too: selfhostit remove $app --delete-data"
+  fi
+}
+
 cmd=${1:-}
 [ $# -gt 0 ] && shift
 case $cmd in
@@ -223,6 +365,17 @@ case $cmd in
     if [ "$warned" = 1 ]; then echo "Some checks need a look: see WARN above."; exit 1; fi
     echo "All checks passed."
     ;;
+  info)
+    for app in "$@"; do is_app "$app" || no_such_app "$app"; done
+    # shellcheck disable=SC2046 # app folder names have no spaces
+    [ $# -gt 0 ] || set -- $(apps)
+    [ $# -gt 0 ] || { echo "No apps in $ROOT yet."; exit 0; }
+    [ -z "$SUDO" ] || sudo true
+    ts_name=
+    if ts_running; then ts_name=$(ts status --json --peers=false 2>/dev/null | dns_name); fi
+    for app in "$@"; do ( info_one "$app" ); done
+    ;;
+  remove|rm) remove_app "$@" ;;
   ''|-h|--help|help) usage ;;
   *) echo "selfhostit: unknown command '$cmd'" >&2; usage 2 >&2 ;;
 esac

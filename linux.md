@@ -1,21 +1,23 @@
 # Raspberry Pi and Linux
 
-This works on a Raspberry Pi 3 or newer, a mini PC, an old laptop that stays plugged in,
-or a VPS: anything that runs Linux and stays on.
+This works on a [Raspberry Pi](words.md#raspberry-pi) 3 or newer, a mini PC, an old laptop that stays plugged in,
+or a [VPS](words.md#vps): anything that runs [Linux](words.md#linux) and stays on. Not sure which to use? See
+[which machine?](machine.md)
 
 ## 1. Prepare the machine
 
 **Raspberry Pi:** flash **Raspberry Pi OS Lite (64-bit)** to a microSD card or, better, a
 USB SSD with [Raspberry Pi Imager](https://www.raspberrypi.com/software/). In its
 settings (the gear icon), set a hostname such as `homeserver`, a username and password,
-your Wi-Fi if you don't use a cable, and turn on SSH. Start the Pi and, from another
-computer, sign in:
+your Wi-Fi if you don't use a cable, and turn on [SSH](words.md#ssh). Start the Pi and, from another
+computer, sign in ([how to open a terminal and connect](terminal.md)):
 
 ```sh
 ssh you@homeserver.local
 ```
 
-**Any other Linux machine:** open a terminal on it, or sign in over SSH.
+**Any other Linux machine:** open a [terminal](words.md#terminal) on it, or sign in over SSH
+([how](terminal.md)).
 
 ## 2. Install the apps
 
@@ -25,13 +27,13 @@ curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.s
 
 The installer:
 
-1. Installs Docker with the official script from get.docker.com if it is missing (it
+1. Installs [Docker](words.md#docker) with the official script from get.docker.com if it is missing (it
    asks first, and may ask for your password).
 2. Shows the apps and asks which ones you want. Type numbers or names, such as `1 3`. Each
    app runs on its own, so pick only the ones you want and add more later.
 3. Asks for a folder, `~/selfhostit` by default, and puts each app in its own folder there
    with its database.
-4. Asks whether to set up Tailscale, which gives every app an `https://` address that only
+4. Asks whether to set up [Tailscale](words.md#tailscale), which gives every app an [`https://`](words.md#https) address that only
    your own devices can reach. Phones need that to install the apps and get notifications.
 5. Runs each app's own installer, which may ask a few questions of its own. Pressing Enter
    keeps the suggested answer.
@@ -40,7 +42,7 @@ The installer:
 
 When it is done it lists every app with its address: `https://selfhostit.<your-tailnet>.ts.net:8090`
 with Tailscale, or `http://localhost:8090` on the machine itself without it. A new app also
-gets a one-time setup code, listed under its address: its setup screen asks for it when you
+gets a one-time [setup code](words.md#setup-code), listed under its address: its setup screen asks for it when you
 create the first account, so nobody else can set it up. Each app only
 listens on the machine and on your Tailscale network, so nothing is open to the rest of your
 network or the internet. Then [make your account and add your household](first-steps.md),
@@ -57,7 +59,7 @@ curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.s
 
 ## Good to know
 
-- **Ports:** Splitwiz 8090, should-we 8091, Flowy 8092, Troye 8093, Shoppa 8094,
+- **[Ports](words.md#port):** Splitwiz 8090, should-we 8091, Flowy 8092, Troye 8093, Shoppa 8094,
   Calio 8095. If another program already has one of these when an app is first installed,
   that app gets the next free port instead, and the list at the end shows it. An app keeps its port from then on. To
   change one, edit the port in that app's `.env` and run the installer again.

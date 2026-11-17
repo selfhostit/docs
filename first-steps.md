@@ -12,12 +12,19 @@ Here is what to do next, and what to try when something doesn't open.
 
 ## 1. Make your account
 
-Open the app's address and type its setup code. The code is there so nobody else who finds a
+Open the app's address and type its [setup code](words.md#setup-code). The code is there so nobody else who finds a
 fresh install can claim it, and it is only needed once. Then create your account: you become
-the app's **owner**, who can add people and open the admin page (`/_/`) with the same email
+the app's **[owner](words.md#owner-and-member)**, who can add people and open the [admin page](words.md#admin-page) (`/_/`) with the same email
 and password.
 
-Lost the code? It is in the app's folder until the first account exists:
+Lost the code? If you have the [selfhostit command](updates-and-backups.md#one-command-selfhostit-update),
+it shows the code until the first account exists, with the app's addresses:
+
+```sh
+selfhostit info flowy
+```
+
+Without it, the code is in the app's folder:
 
 ```sh
 sudo cat ~/selfhostit/flowy/pb_data/setup_code   # your folder and app
@@ -38,8 +45,8 @@ shares one list and one calendar.
 
 ## 3. Put it on your phones
 
-On each phone, install the Tailscale app and sign in with your Tailscale account (for someone
-else's phone, [share the machine](phones.md#tailscale-recommended) with their account). Then open the app's `https://` address, sign in and add it
+On each phone, install the [Tailscale](words.md#tailscale) app and sign in with your Tailscale account (for someone
+else's phone, [share the machine](phones.md#tailscale-recommended) with their account). Then open the app's [`https://`](words.md#https) address, sign in and add it
 to the home screen: [how, on Android and iPhone](phones.md#install-the-app-on-the-phone).
 Turn on notifications in the app's settings if it has them.
 
@@ -47,7 +54,7 @@ Turn on notifications in the app's settings if it has them.
 
 - **Update:** run the installer again, or `selfhostit update all` with the
   [selfhostit command](updates-and-backups.md#one-command-selfhostit-update).
-- **Backups:** each app keeps a backup of its database every night. Copy them somewhere
+- **Backups:** each app keeps a [backup](words.md#backup) of its database every night. Copy them somewhere
   else too: [updates and backups](updates-and-backups.md).
 - **Check:** `selfhostit check` looks for common mistakes, such as an app open to your network.
 
@@ -57,10 +64,10 @@ The apps you already have keep their settings and data.
 
 ## When something doesn't open
 
-**`http://localhost:8092` doesn't open from my laptop or phone.** That address only works on
+**`http://localhost:8092` doesn't open from my laptop or phone.** That [address](words.md#localhost) only works on
 the machine the apps run on: the apps answer nowhere else, on purpose. Run the installer
-again and say yes to Tailscale, or follow [phones](phones.md) for a reverse proxy. To look
-once from your laptop without either, forward the port over SSH:
+again and say yes to Tailscale, or follow [phones](phones.md) for a [reverse proxy](words.md#reverse-proxy). To look
+once from your laptop without either, forward the [port](words.md#port) over [SSH](words.md#ssh):
 `ssh -L 8092:127.0.0.1:8092 you@homeserver.local`, then open `http://localhost:8092` on the laptop.
 
 **The Tailscale address says "connection refused" or doesn't load.** Check that:
@@ -76,7 +83,7 @@ an app to the next free port and lists the new address. To pick a port yourself,
 the app's `.env` and run the installer again.
 
 **"permission denied" talking to Docker.** Run the installer with `sudo` in front of `sh`
-(`... | sudo sh`), or sign out and in again after Docker was installed, so your account is in
+(`... | sudo sh`), or sign out and in again after [Docker](words.md#docker) was installed, so your account is in
 the `docker` group.
 
 **An app stopped or keeps restarting.** See what it says: `cd ~/selfhostit/flowy && docker compose logs --tail 50`

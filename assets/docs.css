@@ -1,0 +1,166 @@
+/* The docs site's look, adapted from selfhostit.org's style.css: same tokens, light and dark. */
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --band: #f1f0ee;
+  --text: #1c1917;
+  --muted: #57534e;
+  --line: #e7e5e4;
+  --brand: #4f46e5;
+  --brand-hover: #4338ca;
+  --on-brand: #ffffff;
+  --code-bg: #1c1917;
+  --code-text: #f5f5f4;
+  --inline-code-bg: #efedeb;
+  --note-bg: #eef0fd;
+  --radius: 14px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121110;
+    --surface: #1c1a19;
+    --band: #181716;
+    --text: #f5f5f4;
+    --muted: #a8a29e;
+    --line: #2e2b29;
+    --brand: #818cf8;
+    --brand-hover: #a5b4fc;
+    --on-brand: #121110;
+    --code-bg: #0a0a09;
+    --inline-code-bg: #262321;
+    --note-bg: #1d1d33;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overflow-wrap: break-word;
+}
+
+a { color: var(--brand); }
+a:hover { color: var(--brand-hover); }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 16px; }
+
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 8px; z-index: 10; background: var(--surface); padding: 6px 12px; border-radius: 8px; }
+
+/* header */
+.top { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 2; }
+.top-row { display: flex; align-items: center; height: 60px; gap: 16px; }
+.logo { font-weight: 700; font-size: 1.15rem; color: var(--text); text-decoration: none; }
+.docs-home { color: var(--muted); text-decoration: none; font-size: .95rem; }
+.docs-home:hover { color: var(--text); }
+.menu-btn {
+  margin-left: auto; cursor: pointer;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 7px 14px; font: inherit; font-size: .9rem; font-weight: 600;
+}
+.menu-btn:hover { border-color: var(--muted); }
+
+/* page list: folded on small screens, a sidebar on wide ones */
+.layout { display: block; }
+.pages ul { list-style: none; margin: 0; padding: 8px 0 16px; display: grid; gap: 2px; }
+.pages a {
+  display: block; padding: 8px 12px; border-radius: 8px;
+  color: var(--muted); text-decoration: none; font-size: .95rem;
+}
+.pages a:hover { color: var(--text); background: var(--band); }
+.pages a[aria-current="page"] { color: var(--text); background: var(--band); font-weight: 600; }
+.js .pages { display: none; border-bottom: 1px solid var(--line); }
+.js .pages.open { display: block; }
+
+@media (min-width: 900px) {
+  .menu-btn { display: none; }
+  .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+  .js .pages, .pages { display: block; border: 0; }
+  .pages ul { position: sticky; top: 76px; padding-top: 32px; }
+}
+
+/* content */
+.content { min-width: 0; max-width: 760px; padding-block: 24px 48px; }
+.content h1, .content h2, .content h3 { line-height: 1.2; margin: 1.6em 0 .5em; scroll-margin-top: 76px; }
+.content h1 { font-size: clamp(2rem, 6vw, 2.8rem); letter-spacing: -.02em; margin-top: .4em; }
+.content h2 { font-size: clamp(1.4rem, 4vw, 1.8rem); letter-spacing: -.01em; padding-top: .4em; border-top: 1px solid var(--line); }
+.content h3 { font-size: 1.15rem; }
+.content p, .content ul, .content ol { margin: 0 0 1em; }
+.content li { margin: .25em 0; }
+.content img { max-width: 100%; height: auto; }
+.content hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
+
+/* code */
+code, pre { font: 14px/1.5 ui-monospace, Menlo, Consolas, monospace; }
+:not(pre) > code {
+  background: var(--inline-code-bg); border-radius: 5px; padding: .1em .35em;
+  font-size: .88em; overflow-wrap: anywhere;
+}
+.content pre {
+  margin: 0; padding: 14px 20px;
+  background: var(--code-bg); color: var(--code-text);
+  border-radius: var(--radius);
+  overflow-x: auto; max-width: 100%;
+}
+.content pre code { background: none; padding: 0; white-space: pre; font-size: 14px; color: inherit; }
+.content div.highlighter-rouge, .content > pre { margin: 0 0 1.2em; }
+/* With the Copy button the box is a row, like the install line on selfhostit.org, so the
+   button never covers the command and only the code scrolls sideways. */
+.has-copy { display: flex; align-items: flex-start; background: var(--code-bg); border-radius: var(--radius); }
+.has-copy pre, .has-copy .highlight { flex: 1; min-width: 0; margin: 0; background: none; }
+.copy {
+  flex: none; margin: 10px 10px 10px 0; cursor: pointer;
+  background: transparent; color: var(--code-text);
+  border: 1px solid #57534e; border-radius: 8px;
+  padding: 4px 10px; font: inherit; font-size: .8rem;
+}
+.copy:hover, .copy:focus-visible { border-color: var(--code-text); }
+/* Rouge adds colour classes; keep code plain and readable on the dark block. */
+.highlight .c, .highlight .c1, .highlight .cm { color: #a8a29e; }
+.highlight .s, .highlight .s1, .highlight .s2 { color: #c7d2fe; }
+
+/* tables */
+.content table {
+  display: block; max-width: 100%; overflow-x: auto;
+  border-collapse: collapse; margin: 0 0 1.2em; font-size: .95rem;
+}
+.content th, .content td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; vertical-align: top; }
+.content th { background: var(--band); }
+.content td { background: var(--surface); }
+
+/* boxed notes, like "Tailscale is a VPN, but not that kind" */
+.content blockquote {
+  margin: 0 0 1.2em; padding: 14px 18px;
+  background: var(--note-bg); border-left: 4px solid var(--brand);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.content blockquote > :first-child { margin-top: 0; }
+.content blockquote > :last-child { margin-bottom: 0; }
+
+/* glossary hint */
+a.word { text-decoration-style: dotted; text-underline-offset: 3px; }
+.hint {
+  position: absolute; z-index: 5;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / .14);
+  padding: 12px 14px; font-size: .92rem; line-height: 1.5;
+}
+.hint strong { display: block; margin-bottom: 4px; }
+.hint p { margin: 0 0 8px; color: var(--muted); }
+.hint a { font-size: .88rem; }
+
+/* footer */
+.foot {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;
+  padding-block: 32px; color: var(--muted); font-size: .9rem;
+  border-top: 1px solid var(--line);
+}

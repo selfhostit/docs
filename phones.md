@@ -1,12 +1,30 @@
 # Use them on your phones
 
-The apps install on a phone from the browser, like an app from a store, and send
-notifications. Phones only allow that over **HTTPS**, so each app needs an `https://`
+The apps [install on a phone](words.md#web-app) from the browser, like an app from a store, and send
+notifications. Phones only allow that over **[HTTPS](words.md#https)**, so each app needs an `https://`
 address. Plain `http://192.168.x.x:8090` works in a browser at home, but not for those two.
 
 Pick one of these.
 
 ## Tailscale (recommended)
+
+> ### Tailscale is a VPN, but not that kind
+>
+> [Tailscale](words.md#tailscale) is a [VPN](words.md#vpn), but here that only means a private link between your
+> own devices. It doesn't hide or reroute your web browsing like the VPN apps sold for
+> privacy or streaming: your phone uses the internet exactly as before. (Tailscale has an
+> option called "exit node" that would send your browsing through home, but you don't need
+> it.)
+>
+> - **It is free for personal use.** The free plan has room for a household: at the time of
+>   writing, up to six people with as many devices as they like.
+> - **A phone runs one VPN at a time.** If you use a paid VPN app, the two take turns: turn
+>   the paid one off when you want to open the apps, and back on afterwards.
+> - **Everyone who uses the apps needs the Tailscale app** on their phone, signed in to your
+>   account or to their own free one that you share the `selfhostit` machine with (see
+>   *Keep your tailnet private* below).
+> - **Battery and data use are small.** It waits quietly in the background and uses data
+>   mostly when you open the apps.
 
 [Tailscale](https://tailscale.com) is a free private network between your own devices. The
 apps get an `https://` address with a real certificate that only your devices can reach, at
@@ -20,7 +38,7 @@ Tailscale (run it again if you skipped it). It then:
 2. The first time, shows a second link that turns on HTTPS for your Tailscale network: open
    it and allow it.
 3. Lists every app's address, such as `https://selfhostit.your-tailnet.ts.net:8090` for
-   Splitwiz. The port is the same as the app's port on the machine.
+   Splitwiz. The [port](words.md#port) is the same as the app's port on the machine.
 
 Then, on each phone, install the Tailscale app, sign in with the same account, and
 [install the apps](#install-the-app-on-the-phone). The sign-in and the addresses stay after a
@@ -71,10 +89,10 @@ so:
 
 For public addresses such as `https://splitwiz.example.com`:
 
-- **A NAS:** its built-in reverse proxy with a free certificate. On a Synology, see the
+- **A [NAS](words.md#nas):** its built-in [reverse proxy](words.md#reverse-proxy) with a free certificate. On a Synology, see the
   [Splitwiz Synology guide](https://github.com/selfhostit/splitwiz/blob/main/docs/synology.md).
-- **A Linux machine:** [Caddy](https://caddyserver.com) gets certificates by itself. Point a
-  DNS record for each name at your home or server address, forward port 443 to the machine,
+- **A [Linux](words.md#linux) machine:** [Caddy](https://caddyserver.com) gets certificates by itself. Point a
+  DNS record for each name at your home or server address, [forward port 443](words.md#port-forwarding) to the machine,
   and use a `Caddyfile` like this:
 
   ```
@@ -104,8 +122,8 @@ to 8095) in your router: that serves the app over plain `http://`, so passwords 
 internet unencrypted, and it skips the proxy. Turn off **UPnP** in the router too, so no
 device on your network can open a port by itself.
 
-**Keep the admin UI private.** Each app's admin UI (`/_/`) can see and change all of its
-data, and its only protection is the owner's password and a limit of 10 tries a minute. On a
+**Keep the admin UI private.** Each app's [admin UI](words.md#admin-page) (`/_/`) can see and change all of its
+data, and its only protection is the [owner](words.md#owner-and-member)'s password and a limit of 10 tries a minute. On a
 public address, block it at the proxy as in the `Caddyfile` above, and open it through
 Tailscale or on the machine itself when you need it (for example
 `ssh -L 8092:127.0.0.1:8092 yourserver`, then `http://localhost:8092/_/`). A proxy that can't
