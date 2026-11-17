@@ -1,0 +1,52 @@
+# Site settings for https://docs.selfhostit.org, built by GitHub Pages' own Jekyll.
+# The .md files stay plain GitHub markdown: the plugins below give them titles, turn
+# README.md into the home page and `x.md` links into pages, so no front matter is needed.
+title: selfhostit docs
+description: Install selfhostit apps on your own Raspberry Pi, NAS or server, step by step.
+url: https://docs.selfhostit.org
+lang: en
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  auto_ids: true
+
+plugins:
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-titles-from-headings
+  - jekyll-relative-links
+
+relative_links:
+  enabled: true
+  collections: false
+
+readme_index:
+  enabled: true
+
+titles_from_headings:
+  enabled: true
+  strip_title: false
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+exclude:
+  - install.sh
+  - selfhostit
+  - scripts/
+  - security/
+  - "*.sh"
+  - .github/
+  - Makefile
+  - LICENSE
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+
+# Don't also publish the raw .md files next to the pages.
+optional_front_matter:
+  remove_originals: true
