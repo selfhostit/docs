@@ -1,7 +1,8 @@
 # Raspberry Pi and Linux
 
 This works on a Raspberry Pi 3 or newer, a mini PC, an old laptop that stays plugged in,
-or a VPS: anything that runs Linux and stays on.
+or a VPS: anything that runs Linux and stays on. Not sure which to use? See
+[which machine?](machine.md)
 
 ## 1. Prepare the machine
 
@@ -9,13 +10,14 @@ or a VPS: anything that runs Linux and stays on.
 USB SSD with [Raspberry Pi Imager](https://www.raspberrypi.com/software/). In its
 settings (the gear icon), set a hostname such as `homeserver`, a username and password,
 your Wi-Fi if you don't use a cable, and turn on SSH. Start the Pi and, from another
-computer, sign in:
+computer, sign in ([how to open a terminal and connect](terminal.md)):
 
 ```sh
 ssh you@homeserver.local
 ```
 
-**Any other Linux machine:** open a terminal on it, or sign in over SSH.
+**Any other Linux machine:** open a terminal on it, or sign in over SSH
+([how](terminal.md)).
 
 ## 2. Install the apps
 

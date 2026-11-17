@@ -4,7 +4,8 @@ Every app is one Docker container with a Compose file, so anything that can run 
 file can run them.
 
 **With SSH** (QNAP, Unraid, TrueNAS SCALE, OpenMediaVault, Asustor, UGREEN, Proxmox in a
-Debian VM or LXC): sign in and run the installer, with `sudo` if your user can't use Docker.
+Debian VM or LXC): sign in ([how to open a terminal and connect](terminal.md)) and run the
+installer, with `sudo` if your user can't use Docker.
 
 ```sh
 curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sudo sh

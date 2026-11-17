@@ -4,23 +4,36 @@ selfhostit apps are small apps you run on your own hardware: a Raspberry Pi, a N
 cheap server. Each one is a single container with its data in one folder, and they all
 install the same way, with Docker.
 
-| App | What it does | Port |
-|---|---|---|
-| [Splitwiz](https://github.com/selfhostit/splitwiz) | Split shared costs with your partner or roommate | 8090 |
-| [should-we](https://github.com/selfhostit/should-we) | Pick one option together, as a group | 8091 |
-| [Flowy](https://github.com/selfhostit/flowy) | A private period and cycle tracker | 8092 |
-| [Troye](https://github.com/selfhostit/troye) | A private calorie and weight tracker | 8093 |
-| [Shoppa](https://github.com/selfhostit/shoppa) | A shared shopping list for your household | 8094 |
-| [Calio](https://github.com/selfhostit/calio) | One calendar for your household: plans, pet sitting and trips | 8095 |
+| App | What it does |
+|---|---|
+| [Splitwiz](https://github.com/selfhostit/splitwiz) | Split shared costs with your partner or roommate |
+| [should-we](https://github.com/selfhostit/should-we) | Pick one option together, as a group |
+| [Flowy](https://github.com/selfhostit/flowy) | A private period and cycle tracker |
+| [Troye](https://github.com/selfhostit/troye) | A private calorie and weight tracker |
+| [Shoppa](https://github.com/selfhostit/shoppa) | A shared shopping list for your household |
+| [Calio](https://github.com/selfhostit/calio) | One calendar for your household: plans, pet sitting and trips |
 
-The port is where the installer puts each app, so they can all run on one machine. If
-another program already has it, the app gets the next free port, and keeps that one.
+## Before you start
+
+- **About 30 minutes.**
+- **A machine that stays on,** such as a Raspberry Pi, a mini PC, an old laptop or a NAS.
+  Not sure which? See [which machine?](machine.md)
+- **A computer with a terminal** to type the install line, on that machine or connected to
+  it: [open a terminal and connect](terminal.md).
+- **An account to sign in to Tailscale with** (Google, Microsoft, Apple or GitHub), if you
+  want the apps on your phones.
+- **The phones of everyone who will use the apps.** Each one gets the free Tailscale app:
+  [what that means for a phone](phones.md#tailscale-is-a-vpn-but-not-that-kind).
+
+You can stop at any step and nothing breaks: the apps keep working on the machine, and
+running the installer again picks up where you left off. You can also
+[remove everything](updates-and-backups.md#remove-an-app) later.
 
 ## Quick start
 
 **1. Install the apps you want.** You need a little computer that runs Linux, such as an old
 laptop, a mini PC, a Raspberry Pi or a NAS (see [what you need](#what-you-need)), and a
-terminal on it, or SSH. Then:
+terminal on it, or SSH ([how to open one and connect](terminal.md)). Then:
 
 ```sh
 curl -fsSL https://github.com/selfhostit/docs/releases/latest/download/install.sh | sh
@@ -54,6 +67,8 @@ your apps one with [Tailscale](phones.md#tailscale-recommended), a free private 
 only your own devices can reach: say yes when it asks. There is nothing to install on the
 server, because the installer runs Tailscale for you; you sign in once, and each phone gets
 the Tailscale app. Then [put the apps on your phones](phones.md#install-the-app-on-the-phone).
+Tailscale is a VPN, but not the kind that changes how your phone browses:
+[here is what it does on a phone](phones.md#tailscale-is-a-vpn-but-not-that-kind).
 
 <img src="img/phones.svg" width="100%" alt="Three panels: say yes to Tailscale in the installer and open its sign-in link, install the Tailscale app on each phone with the same account, then open each app's https address and add it to the home screen.">
 
@@ -93,6 +108,10 @@ privately through the app's Security tab on GitHub or to kalfasyan@pm.me
 
 ## Guides
 
+- [Which machine?](machine.md): a NAS, a spare computer, a Raspberry Pi or mini PC, or a
+  rented server.
+- [Open a terminal and connect](terminal.md): on Windows, Mac, Linux or a Chromebook.
+- [Words you'll meet](words.md): SSH, Docker, Tailscale and the other words in these guides.
 - [Raspberry Pi and Linux](linux.md): a Pi, a mini PC, an old laptop or a VPS.
 - [Synology NAS](synology.md): with Container Manager, from the DSM web interface.
 - [Other NAS and home servers](other-nas.md): QNAP, Unraid, TrueNAS SCALE, Portainer,
@@ -104,6 +123,8 @@ privately through the app's Security tab on GitHub or to kalfasyan@pm.me
 - [Security and privacy](security.md): how your data is protected, and how to report a problem.
 
 ## What you need
+
+Not sure what to run them on? [Which machine?](machine.md) compares the choices.
 
 Anything that runs Docker containers for `linux/amd64`, `linux/arm64` or `linux/arm/v7`:
 x86 and ARM servers, a Raspberry Pi 3 or newer (64-bit Raspberry Pi OS is best), and NAS

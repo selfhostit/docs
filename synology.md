@@ -9,7 +9,8 @@ shared folder.
 1. Install **Container Manager** from Package Center. It creates the `docker` shared folder.
 2. Control Panel > Terminal & SNMP: tick **Enable SSH service**.
 3. From your computer, sign in with your DSM account: `ssh you@your-nas.local`
-   (on Windows, in PowerShell).
+   (on Windows, in PowerShell). New to this? See
+   [open a terminal and connect](terminal.md).
 
 ## 2. Install the apps
 
