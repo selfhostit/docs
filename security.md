@@ -170,6 +170,7 @@ It is one plain shell script with comments. What it does:
    [Troye](https://github.com/selfhostit/troye/blob/main/deploy/install.sh),
    [Shoppa](https://github.com/selfhostit/shoppa/blob/main/deploy/install.sh),
    [Calio](https://github.com/selfhostit/calio/blob/main/deploy/install.sh),
+   [Reckon](https://github.com/selfhostit/reckon/blob/main/deploy/install.sh),
    [Splitwiz](https://github.com/selfhostit/splitwiz/blob/main/scripts/install.sh)) or
    starts the compose file ([should-we](https://github.com/selfhostit/should-we/blob/main/docker-compose.yml)).
 4. If you say yes, starts one Tailscale container and gives each app an `https://` address.

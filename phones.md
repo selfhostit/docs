@@ -61,11 +61,12 @@ To sign in without the link, for example on a machine without a browser nearby, 
    sudo tailscale serve --bg --https=8093 http://127.0.0.1:8093   # Troye
    sudo tailscale serve --bg --https=8094 http://127.0.0.1:8094   # Shoppa
    sudo tailscale serve --bg --https=8095 http://127.0.0.1:8095   # Calio
+   sudo tailscale serve --bg --https=8096 http://127.0.0.1:8096   # Reckon
    ```
 
    `tailscale serve status` shows the addresses. They stay after a restart.
 
-Flowy, Troye, Shoppa and Calio can also join Tailscale on their own, each with its own name such as
+Flowy, Troye, Shoppa, Calio and Reckon can also join Tailscale on their own, each with its own name such as
 `https://flowy.your-tailnet.ts.net`, when you install them with their own installer: see
 their `docs/deploy.md`. Then each app is a separate Tailscale machine, with no port in its
 address, and you share each one on its own: someone you share Flowy with can't open Calio
@@ -118,7 +119,7 @@ For public addresses such as `https://splitwiz.example.com`:
 - **Without opening your router:** a Cloudflare Tunnel does the same from the inside.
 
 Forward only port 443, and only to the reverse proxy. Never forward an app's own port (8090
-to 8095) in your router: that serves the app over plain `http://`, so passwords cross the
+to 8096) in your router: that serves the app over plain `http://`, so passwords cross the
 internet unencrypted, and it skips the proxy. Turn off **UPnP** in the router too, so no
 device on your network can open a port by itself.
 

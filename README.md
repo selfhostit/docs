@@ -12,6 +12,7 @@ install the same way, with [Docker](words.md#docker).
 | [Troye](https://github.com/selfhostit/troye) | A private calorie and weight tracker |
 | [Shoppa](https://github.com/selfhostit/shoppa) | A shared shopping list for your household |
 | [Calio](https://github.com/selfhostit/calio) | One calendar for your household: plans, pet sitting and trips |
+| [Reckon](https://github.com/selfhostit/reckon) | Practise the numerical reasoning tests used in job applications |
 
 ## Before you start
 
