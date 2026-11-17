@@ -8,6 +8,24 @@ Pick one of these.
 
 ## Tailscale (recommended)
 
+> ### Tailscale is a VPN, but not that kind
+>
+> Tailscale is a [VPN](words.md#vpn), but here that only means a private link between your
+> own devices. It doesn't hide or reroute your web browsing like the VPN apps sold for
+> privacy or streaming: your phone uses the internet exactly as before. (Tailscale has an
+> option called "exit node" that would send your browsing through home, but you don't need
+> it.)
+>
+> - **It is free for personal use.** The free plan has room for a household: at the time of
+>   writing, up to six people with as many devices as they like.
+> - **A phone runs one VPN at a time.** If you use a paid VPN app, the two take turns: turn
+>   the paid one off when you want to open the apps, and back on afterwards.
+> - **Everyone who uses the apps needs the Tailscale app** on their phone, signed in to your
+>   account or to their own free one that you share the `selfhostit` machine with (see
+>   *Keep your tailnet private* below).
+> - **Battery and data use are small.** It waits quietly in the background and uses data
+>   mostly when you open the apps.
+
 [Tailscale](https://tailscale.com) is a free private network between your own devices. The
 apps get an `https://` address with a real certificate that only your devices can reach, at
 home and away, and you don't open anything in your router.
