@@ -17,7 +17,14 @@ fresh install can claim it, and it is only needed once. Then create your account
 the app's **owner**, who can add people and open the admin page (`/_/`) with the same email
 and password.
 
-Lost the code? It is in the app's folder until the first account exists:
+Lost the code? If you have the [selfhostit command](updates-and-backups.md#one-command-selfhostit-update),
+it shows the code until the first account exists, with the app's addresses:
+
+```sh
+selfhostit info flowy
+```
+
+Without it, the code is in the app's folder:
 
 ```sh
 sudo cat ~/selfhostit/flowy/pb_data/setup_code   # your folder and app

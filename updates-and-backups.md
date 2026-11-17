@@ -39,6 +39,9 @@ selfhostit update splitwiz        # one app
 selfhostit update splitwiz flowy  # several
 selfhostit update all             # every app
 selfhostit list                   # the apps it finds and the image each one runs
+selfhostit info                   # every app's folder, addresses and setup code
+selfhostit info flowy             # the same for one app
+selfhostit remove flowy           # stop and remove an app, keeping its data
 ```
 
 For each app it shows the image its compose file points at, pulls it, and says whether the
@@ -48,6 +51,11 @@ Synology, `~/selfhostit` elsewhere), and works for any folder there with a
 `docker-compose.yml`. Keep them somewhere else? Add `export SELFHOSTIT_DIR=/path/to/apps` to
 `~/.profile`. It uses `sudo` when your user can't reach Docker directly, and asks for the
 password once. Run the `curl` line again to get a newer version of the command.
+
+`selfhostit info` shows, for each app, its folder, its address on the machine
+(`http://localhost:8092` for Flowy), its Tailscale address if the installer set one up, and
+its setup code while nobody has made the first account yet. `selfhostit remove` is in
+[remove an app](#remove-an-app) below.
 
 ### Check your install: `selfhostit check`
 
@@ -123,6 +131,65 @@ Backup.
 Then open the app and check that your newest entries are there. Once they are, delete
 `pb_data.old`.
 
-## Removing an app
+## Remove an app
 
-In its folder, `docker compose down`, then delete the folder. That deletes its data too.
+**With the `selfhostit` command** ([install it](#one-command-selfhostit-update)):
+
+```sh
+selfhostit remove flowy
+```
+
+It asks you to confirm, stops and removes the app's containers, turns off its Tailscale
+address, and keeps its data folder, telling you where it is. To delete the data too, add
+`--delete-data`: it then asks you to type the app's name before it deletes the folder.
+
+**By hand,** for example for Flowy:
+
+1. Stop and remove its containers:
+
+   ```sh
+   cd ~/selfhostit/flowy && docker compose down
+   ```
+
+2. Turn off its Tailscale address, if the installer set one up. The installer serves each
+   app on its own port through the `selfhostit-tailscale` container; give the app's port
+   (8092 for Flowy, or the one in its `.env`):
+
+   ```sh
+   docker exec selfhostit-tailscale tailscale --socket=/tmp/tailscaled.sock serve --https=8092 off
+   ```
+
+3. The data stays in the app's folder until you delete it. Want to keep a copy? Make a
+   [backup](#backups) first. Then:
+
+   ```sh
+   sudo rm -rf ~/selfhostit/flowy
+   ```
+
+Put `sudo` in front of `docker` if your user can't use Docker. To install the app again
+later, run the installer and pick it: an app whose folder you kept comes back with its data.
+
+**On a Synology without SSH:** Container Manager > **Project**, select the app, then
+Action > **Stop** and Action > **Delete**. Then delete its folder in `docker` with File
+Station if you don't want the data.
+
+### Remove everything
+
+1. Remove every app as above, with `selfhostit remove` or by hand.
+2. Stop the Tailscale container and delete the apps' folder, which also holds the
+   machine's Tailscale key:
+
+   ```sh
+   cd ~/selfhostit/tailscale && docker compose down
+   sudo rm -rf ~/selfhostit
+   ```
+
+   On a Synology, the folder is the `docker` shared folder: delete only the apps' folders
+   and `tailscale` in it, in File Station, since other containers may keep data there too.
+
+3. On Tailscale's [machines page](https://login.tailscale.com/admin/machines), find
+   `selfhostit` and choose **Remove**.
+4. If you installed the `selfhostit` command, delete it: `rm ~/bin/selfhostit`.
+
+Docker stays on the machine. Other programs may use it, so remove it only if you know
+nothing else does.
