@@ -83,11 +83,11 @@ pins() {
 	troye v0.1.6 deploy/tailscale-serve.json e8340fb636e47ddd1c3bd6709d39303d32ab9aa2eecb9e9ca35ac3b82af102c9
 	troye v0.1.6 deploy/docker-compose.host.yml 04812d2b8d78e5e0f8af6c94d71be23e246c03a39446fa853a262e13fdacc53a
 	troye v0.1.6 deploy/.env.example de3c1e179895c0737793537a9c1c416ba20221fafe55d648d92a78ac9c7c4759
-	shoppa v0.1.7 deploy/install.sh 8d06e189c1a0dbb13deb8c2ce9a6de26914fd41acecc6843ed2f1e585ed021fb
-	shoppa v0.1.7 deploy/docker-compose.yml 8e9ad2407bb197e63252774cd9e91782a9984fcd924290c8fc66ab8965cb9f0e
-	shoppa v0.1.7 deploy/docker-compose.tailscale.yml 8ef58d05b48b2026e4cac3bc10abf558b6229967efdd729d8e86907c80399c88
-	shoppa v0.1.7 deploy/tailscale-serve.json e8340fb636e47ddd1c3bd6709d39303d32ab9aa2eecb9e9ca35ac3b82af102c9
-	shoppa v0.1.7 deploy/.env.example c9714d3e7a599ff223f0bf8b5e61a41e0abb8a45145cb516e5f8e7ff67fae2e8
+	shoppa v0.1.8 deploy/install.sh 8d06e189c1a0dbb13deb8c2ce9a6de26914fd41acecc6843ed2f1e585ed021fb
+	shoppa v0.1.8 deploy/docker-compose.yml 8e9ad2407bb197e63252774cd9e91782a9984fcd924290c8fc66ab8965cb9f0e
+	shoppa v0.1.8 deploy/docker-compose.tailscale.yml 8ef58d05b48b2026e4cac3bc10abf558b6229967efdd729d8e86907c80399c88
+	shoppa v0.1.8 deploy/tailscale-serve.json e8340fb636e47ddd1c3bd6709d39303d32ab9aa2eecb9e9ca35ac3b82af102c9
+	shoppa v0.1.8 deploy/.env.example c9714d3e7a599ff223f0bf8b5e61a41e0abb8a45145cb516e5f8e7ff67fae2e8
 	calio v0.1.8 deploy/install.sh a81550ca4fecf22d4bd032cbc0e3f93a59f05c209ab63664336ec7a6c1ee9643
 	calio v0.1.8 deploy/docker-compose.yml 60be31fe42b628f2f5561998146e1d222e9d18a4c348a72558cb48b4bb311b76
 	calio v0.1.8 deploy/docker-compose.tailscale.yml 8daad39c8a982aaa6b417ecb6b319d0c155bd8e1cc2a62ccee8e66c1d2b60a04
